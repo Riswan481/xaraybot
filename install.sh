@@ -193,49 +193,24 @@ if [[ "$INSTALL_OPTION" == "1" || "$INSTALL_OPTION" == "3" ]]; then
 fi
 
 # ==========================
-# --- Instalasi Bot WA ---
+# --- Hapus Bot WhatsApp ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
+if [[ "$INSTALL_OPTION" == "4" ]]; then
   echo -e "$LINE"
-  echo -e "${BLUE}🤖 Instalasi Bot WhatsApp...${NC}"
+  echo -e "${RED}🗑️ Menghapus Bot WhatsApp...${NC}"
   echo -e "$LINE"
 
-  echo -ne "${YELLOW}📦 Menginstal nodejs, npm, git, jq...${NC}"
+  echo -ne "${YELLOW}📍 Menghapus folder simplebot...${NC}"
+  (rm -rf simplebot) & loading_spinner
+
+  echo -ne "${YELLOW}🧹 Menghapus PM2 dan proses bot...${NC}"
   (
-    apt install -y nodejs npm git jq
+    pm2 stop simplebot >/dev/null 2>&1
+    pm2 delete simplebot >/dev/null 2>&1
+    pm2 save
   ) & loading_spinner
 
-  echo -ne "${YELLOW}📥 Clone repo bot WhatsApp...${NC}"
-  (git clone https://github.com/script-vpn-premium/scriptbot.git simplebot) & loading_spinner
-
-  echo ""
-  read -p "$(echo -e "${YELLOW}📱 Masukkan nomor WhatsApp owner (cth: 6281234567890): ${NC}")" OWNER_NUMBER
-
-  cd simplebot || exit
-  SETTINGS_FILE="settings.js"
-
-  echo -ne "${YELLOW}📦 Menginstall package npm...${NC}" && (npm install) & loading_spinner
-  echo -ne "${YELLOW}📦 Menginstall PM2...${NC}" && (npm install -g pm2) & loading_spinner
-
-# Tambahkan atau update owner number di settings.js
-if grep -q "global\.owner *= *\"" $SETTINGS_FILE; then
-  sed -i "s|global\.owner *= *\"[^\"]*\".*|global.owner = \"$OWNER_NUMBER\" // Owner number|" $SETTINGS_FILE
-  echo -e "${YELLOW}✅ global.owner berhasil diperbarui: $OWNER_NUMBER${NC}"
-else
-  echo -e "\nglobal.owner = \"$OWNER_NUMBER\" // Owner number" >> $SETTINGS_FILE
-  echo -e "${YELLOW}⚠️ Baris global.owner belum ada, ditambahkan manual.${NC}"
-fi
-  sleep 3
-
-  echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
-  echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu proses akan lanjut otomatis...${NC}"
-  echo ""
-  node index.js
-
-  echo -e "${GREEN}✅ Pairing sukses. Menjalankan bot di PM2...${NC}"
-  pm2 start index.js --name simplebot
-  pm2 save
-  pm2 startup
+  echo -e "${GREEN}✅ Bot WhatsApp berhasil dihapus.${NC}"
 fi
 
 # ==========================
