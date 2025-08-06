@@ -42,7 +42,7 @@ loading_spinner() {
 clear
 echo -e "${YELLOW}"
 echo "═══════════════════════════════════════════════════════════════"
-echo "       🚀 INSTALLER SCRIPT XRAY & BOT WHATSAPP by RISWAN        "
+echo "    🚀 INSTALLER SCRIPT XRAY & BOT WHATSAPP by RISWAN        "
 echo "═══════════════════════════════════════════════════════════════"
 echo -e "${NC}"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
