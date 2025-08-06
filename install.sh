@@ -93,7 +93,7 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 # ==========================
 # --- Instalasi Bot WA ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
+if [[ "$INSTALL_OPTION" == "1" || "$INSTALL_OPTION" == "3" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi Bot WhatsApp...${NC}"
   echo -e "$LINE"
