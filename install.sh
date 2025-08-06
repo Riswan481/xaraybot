@@ -11,12 +11,12 @@ WHITELIST_URL="https://raw.githubusercontent.com/Riswan481/xaraybot/main/allowed
 # --- Warna & Garis ---
 # ==========================
 YELLOW='\033[1;33m'
-GREEN='\033[0;32m'
-BLUE='\033[1;34m'
-CYAN='\033[1;36m'
-RED='\033[0;31m'
+GREEN='\033[1;92m'
+BLUE='\033[1;94m'
+CYAN='\033[1;96m'
+RED='\033[1;91m'
 NC='\033[0m'
-LINE="${YELLOW}
+LINE="${CYAN}
 ═══════════════════════════════════════════════════════════════${NC}"
 
 # ==========================
@@ -131,26 +131,29 @@ if [[ "$INSTALL_OPTION" == "1" || "$INSTALL_OPTION" == "3" ]]; then
     apt install -y curl git
   ) & loading_spinner
 
-  echo -ne "${YELLOW}🧹 Menghapus folder lama...${NC}"
+  echo -ne "${YELLOW}🧹 Menghapus folder sementara lama...${NC}"
   (rm -rf "$TEMP_DIR") & loading_spinner
 
-  echo -ne "${YELLOW}📥 Clone repo script Xray...${NC}"
+  echo -ne "${YELLOW}📥 Meng-clone repo: $REPO_URL ...${NC}"
   (git clone "$REPO_URL" "$TEMP_DIR") & loading_spinner
 
   echo -ne "${YELLOW}📁 Membuat folder /etc/xray...${NC}"
   (mkdir -p /etc/xray) & loading_spinner
 
-  echo -ne "${YELLOW}📂 Menyalin file script...${NC}"
+  echo -ne "${YELLOW}📂 Menyalin file script ke /etc/xray...${NC}"
   (
-    cp "$TEMP_DIR"/add-vmess /etc/xray/
-    cp "$TEMP_DIR"/add-vless /etc/xray/
-    cp "$TEMP_DIR"/add-trojan /etc/xray/
-    cp "$TEMP_DIR"/add-ss /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-vmess" /etc/xray/
+    cp "$TEMP_DIR/add-vless" /etc/xray/
+    cp "$TEMP_DIR/add-trojan" /etc/xray/
+    cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
   ) & loading_spinner
 
-  echo -ne "${YELLOW}🔐 Set izin eksekusi...${NC}"
+  echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
   (
-    chmod +x /etc/xray/add-*
+    chmod +x /etc/xray/add-vmess
+    chmod +x /etc/xray/add-vless
+    chmod +x /etc/xray/add-trojan
+    chmod +x /etc/xray/add-ss 2>/dev/null || true
   ) & loading_spinner
 
   echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
@@ -228,6 +231,15 @@ else
 fi
 
 echo -e "$LINE"
-echo -e "${YELLOW}🔁 Reboot sistem dalam 10 detik...${NC}"
-sleep 10
-reboot
+echo -e "${BLUE}"
+cat << "EOF"
+   __  __      ____        _   
+  |  \/  |_ __| __ )  ___ | |_ 
+  | |\/| | '__|  _ \ / _ \| __|
+  | |  | | |  | |_) | (_) | |_ 
+  |_|  |_|_|  |____/ \___/ \__|
+
+EOF
+echo -e "${CYAN}        ✅ Xray & Bot WA Installer by Riswan ✅${NC}"
+echo -e "$LINE"
+echo -e "${GREEN}🎉 Semua proses selesai tanpa error. Silakan gunakan fiturnya!${NC}"
