@@ -1,0 +1,54 @@
+#!/bin/bash
+user=$1
+days=$2
+Quota=${3:-0}
+iplimit=${4:-0}
+bug=$5
+uuid=$(cat /proc/sys/kernel/random/uuid)
+exp=$(date -d "$days days" +"%Y-%m-%d")
+domain=$(cat /etc/xray/domain)
+if [ ! -e /etc/vless ]; then
+  mkdir -p /etc/vless
+fi
+sed -i '/#vless$/a\#& '"$user $exp"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
+sed -i '/#vlessgrpc$/a\#&& '"$user $exp"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
+if [[ $iplimit -gt 0 ]]; then
+mkdir -p /etc/kyt/limit/vless/ip
+echo -e "$iplimit" > /etc/kyt/limit/vless/ip/$user
+fi
+c=$(echo "${Quota}" | sed 's/[^0-9]*//g')
+d=$((${c} * 1024 * 1024 * 1024))
+if [[ ${c} != "0" ]]; then
+  echo "${d}" >/etc/vless/${user}
+fi
+DATADB=$(cat /etc/vless/.vless.db | grep "^###" | grep -w "${user}" | awk '{print $2}')
+if [[ "${DATADB}" != '' ]]; then
+  sed -i "/\b${user}\b/d" /etc/vless/.vless.db
+fi
+echo "### ${user} ${exp} ${uuid} ${Quota} ${iplimit}" >>/etc/vless/.vless.db
+vless_tls_ws_link="vless://${uuid}@${domain}:443?encryption=none&security=tls&type=ws&path=/vless&host=${bug}&sni=${domain}#${user}-VlessWS-TLS"
+vless_none_tls_ws_link="vless://${uuid}@${bug}:80?encryption=none&security=none&type=ws&path=/vless&host=${domain}#${user}-VlessWS-NonTLS"
+vless_grpc_link="vless://${uuid}@${domain}:443?encryption=none&security=tls&type=grpc&serviceName=vless-grpc&sni=${domain}#${user}-VlessGRPC"
+echo "Attempting to restart Xray service..."
+systemctl restart xray > /dev/null 2>&1
+if systemctl is-active --quiet xray; then
+    echo "Xray service restarted successfully and is running."
+else
+    echo "ERROR: Xray service failed to start or is not active."
+    echo "Please check Xray logs for details: journalctl -u xray.service --no-pager -n 50"
+    echo "The Xray configuration might be invalid after modification."
+fi
+systemctl restart nginx > /dev/null 2>&1
+service cron restart > /dev/null 2>&1
+echo "SUCCESS"
+echo "Remarks: ${user}"
+echo "Domain: ${domain}"
+echo "User Quota: ${Quota} GB"
+echo "User IP Limit: ${iplimit} IP"
+echo "UUID: ${uuid}"
+echo "Expired: ${exp}"
+echo "Link VLESS WS TLS: ${vless_tls_ws_link}"
+echo "Link VLESS WS Non TLS: ${vless_none_tls_ws_link}"
+echo "Link VLESS gRPC: ${vless_grpc_link}"
