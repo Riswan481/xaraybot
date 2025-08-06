@@ -12,16 +12,16 @@ Kamu bisa menginstal SimpleBot secara otomatis dengan satu baris perintah:
 bash <(curl -sL https://raw.githubusercontent.com/Riswan481/xaraybot/main/install.sh)
 ```
 ---
-## AGAR BOT TETEP AKTIP
+## Install pm
 ```bash
+cd ~/simplebot
 pm2 start index.js --name simplebot
 pm2 save
-pm2 startup
 ```
 ---
 
-## HAPUS BOT
+## Stop pm
 
 ```bash
-rm -rf simplebot
+pm2 delete simplebot
 ```
