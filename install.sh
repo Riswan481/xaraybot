@@ -132,16 +132,24 @@ if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   echo ""
 
   echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
-  echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu proses akan lanjut otomatis...${NC}"
+  echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu tekan CTRL+C...${NC}"
   echo ""
+
   node index.js
 
   echo -e ""
   echo -e "${GREEN}✅ Pairing sukses. Menjalankan bot di PM2...${NC}"
 
+  # WAJIB MASUK LAGI KE FOLDER simplebot
+  cd ~/simplebot || exit
+
+  pm2 delete simplebot 2>/dev/null
   pm2 start index.js --name simplebot
   pm2 save
   pm2 startup
+
+  echo -e "${GREEN}✅ Bot berhasil dijalankan di PM2 dengan nama: simplebot${NC}"
+  pm2 list
 fi
 
 # ==========================
