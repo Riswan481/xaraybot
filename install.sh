@@ -56,14 +56,14 @@ echo -e "${CYAN}  x) Keluar${NC}"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 
-read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3/4/5/x): ${NC}")" INSTALL_OPTION
+read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3/4/5/6/x): ${NC}")" INSTALL_OPTION
 
 if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
   echo -e "${RED}❌ Proses dibatalkan oleh user.${NC}"
   exit 0
 fi
 
-if ! [[ "$INSTALL_OPTION" =~ ^[1-5]$ ]]; then
+if ! [[ "$INSTALL_OPTION" =~ ^[1-6]$ ]]; then
   echo -e "${RED}❌ Pilihan tidak valid. Instalasi dibatalkan.${NC}"
   exit 1
 fi
