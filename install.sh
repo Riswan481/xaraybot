@@ -20,7 +20,7 @@ LINE="${CYAN}
 ═══════════════════════════════════════════════════════════════${NC}"
 
 # ==========================
-# --- Fungsi loading ---
+# --- Fungsi Loading ---
 # ==========================
 loading_spinner() {
   local pid=$!
@@ -37,7 +37,7 @@ loading_spinner() {
 }
 
 # ==========================
-# --- Konfirmasi Pilihan ---
+# --- Menu Pilihan ---
 # ==========================
 clear
 echo -e "${YELLOW}"
@@ -79,7 +79,7 @@ else
 fi
 
 # ==========================
-# --- Ganti mirror APT ---
+# --- Ganti Mirror APT ---
 # ==========================
 echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 (
@@ -93,7 +93,7 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 # ==========================
 # --- Instalasi Bot WA ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "1" || "$INSTALL_OPTION" == "3" ]]; then
+if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi Bot WhatsApp...${NC}"
   echo -e "$LINE"
@@ -112,44 +112,29 @@ if [[ "$INSTALL_OPTION" == "1" || "$INSTALL_OPTION" == "3" ]]; then
   echo -ne "${YELLOW}📦 Menginstall PM2...${NC}"
   (npm install -g pm2) & loading_spinner
 
-  # --- Input Nomor Owner ---
   read -p "$(echo -e "${YELLOW}📱 Masukkan nomor WhatsApp owner (cth: 6281234567890): ${NC}")" OWNER_NUMBER
 
-# --- Ubah global.owner jadi STRING biasa ---
-if [[ -f settings.js ]]; then
-  if grep -q "global\.owner" settings.js; then
-    sed -i -E "s/global\.owner *= *[\"'][^\"']*[\"']/global.owner = \"$OWNER_NUMBER\"/" settings.js
-    echo -e "${YELLOW}✅ global.owner berhasil diubah ke string: \"$OWNER_NUMBER\"${NC}"
+  if [[ -f settings.js ]]; then
+    if grep -q "global\.owner" settings.js; then
+      sed -i -E "s/global\.owner *= *[\"'][^\"']*[\"']/global.owner = \"$OWNER_NUMBER\"/" settings.js
+      echo -e "${YELLOW}✅ global.owner berhasil diubah ke string: \"$OWNER_NUMBER\"${NC}"
+    else
+      echo -e "${RED}❌ Tidak ditemukan baris global.owner di settings.js${NC}"
+    fi
   else
-    echo -e "${RED}❌ Tidak ditemukan baris global.owner di settings.js${NC}"
+    echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
   fi
-else
-  echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
-fi
 
-  # --- JEDA ---
-  read -n 1 -s -r -p "📌 Tekan tombol apapun untuk melanjutkan pairing WhatsApp..."
-  echo ""
-
-  echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
-  echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu tekan CTRL+C...${NC}"
-  echo ""
-
-  node index.js
-
-  echo -e ""
-  echo -e "${GREEN}✅ Pairing sukses. Menjalankan bot di PM2...${NC}"
-
-  # WAJIB MASUK LAGI KE FOLDER simplebot
   cd ~/simplebot || exit
-
   pm2 delete simplebot 2>/dev/null
   pm2 start index.js --name simplebot
   pm2 save
   pm2 startup
 
-  echo -e "${GREEN}✅ Bot berhasil dijalankan di PM2 dengan nama: simplebot${NC}"
-  pm2 list
+  echo -e "${GREEN}✅ Bot WA berhasil dijalankan di PM2 dengan nama: simplebot${NC}"
+  echo -e "${YELLOW}📌 Untuk pairing QR, jalankan perintah berikut manual:${NC}"
+  echo -e "${CYAN}   cd ~/simplebot && pm2 logs simplebot${NC}"
+  echo -e "${YELLOW}📲 Scan QR-nya lewat WhatsApp setelah bot tampil log QR.${NC}"
 fi
 
 # ==========================
@@ -226,7 +211,7 @@ if [[ "$INSTALL_OPTION" == "4" ]]; then
 fi
 
 # ==========================
-# --- Selesai ---
+# --- Penutup ---
 # ==========================
 echo ""
 echo -e "$LINE"
