@@ -386,8 +386,6 @@ fi
 # ==========================
 # --- Selesai ---
 # ==========================
-elif [[ "$INSTALL_OPTION" == "6" ]]; then
-  echo -e "🤖 ${CYAN}BotVPN4 aktif dan berjalan dengan systemd (sellvpn.service).${NC}"
 echo ""
 echo -e "$LINE"
 echo -e "${GREEN}✅ Instalasi selesai!${NC}"
@@ -398,6 +396,8 @@ elif [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "🤖 ${CYAN}Bot WA aktif dengan PM2.${NC}"
 elif [[ "$INSTALL_OPTION" == "4" ]]; then
   echo -e "🤖 ${CYAN}Bot Telegram aktif dengan PM2.${NC}"
+elif [[ "$INSTALL_OPTION" == "6" ]]; then
+  echo -e "🤖 ${CYAN}BotVPN4 aktif dan berjalan dengan systemd (sellvpn.service).${NC}"
 fi
 
 echo -e "$LINE"
