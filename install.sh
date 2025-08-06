@@ -20,7 +20,7 @@ LINE="${CYAN}
 ═══════════════════════════════════════════════════════════════${NC}"
 
 # ==========================
-# --- Fungsi Loading ---
+# --- Fungsi loading ---
 # ==========================
 loading_spinner() {
   local pid=$!
@@ -46,16 +46,15 @@ echo "    🚀 INSTALLER SCRIPT XRAY & BOT WHATSAPP by RISWAN        "
 echo "═══════════════════════════════════════════════════════════════"
 echo -e "${NC}"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
-echo -e "  1) 🔐 Install Script Xray saja"
-echo -e "  2) 🤖 Install Bot WhatsApp saja"
-echo -e "  3) 🚀 Install Keduanya (Xray + Bot WA)"
-echo -e "  4) 🗑️ Hapus Bot WhatsApp"
+echo -e "  1) 🔐 Install Script Xray"
+echo -e "  2) 🤖 Install Bot WhatsApp"
+echo -e "  3) 🗑️ Hapus Bot WhatsApp"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 
-read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3/4): ${NC}")" INSTALL_OPTION
+read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3): ${NC}")" INSTALL_OPTION
 
-if [[ "$INSTALL_OPTION" != "1" && "$INSTALL_OPTION" != "2" && "$INSTALL_OPTION" != "3" && "$INSTALL_OPTION" != "4" ]]; then
+if [[ "$INSTALL_OPTION" != "1" && "$INSTALL_OPTION" != "2" && "$INSTALL_OPTION" != "3" ]]; then
   echo -e "${RED}❌ Pilihan tidak valid. Instalasi dibatalkan.${NC}"
   exit 1
 fi
@@ -79,7 +78,7 @@ else
 fi
 
 # ==========================
-# --- Ganti Mirror APT ---
+# --- Ganti mirror APT ---
 # ==========================
 echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 (
@@ -93,7 +92,7 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 # ==========================
 # --- Instalasi Bot WA ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
+if [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi Bot WhatsApp...${NC}"
   echo -e "$LINE"
@@ -125,22 +124,32 @@ if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
     echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
   fi
 
+  read -n 1 -s -r -p "📌 Tekan tombol apapun untuk melanjutkan pairing WhatsApp..."
+  echo ""
+
+  echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
+  echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu tekan CTRL+C...${NC}"
+  echo ""
+
+  node index.js
+
+  echo -e ""
+  echo -e "${GREEN}✅ Pairing sukses. Menjalankan bot di PM2...${NC}"
+
   cd ~/simplebot || exit
   pm2 delete simplebot 2>/dev/null
   pm2 start index.js --name simplebot
   pm2 save
   pm2 startup
 
-  echo -e "${GREEN}✅ Bot WA berhasil dijalankan di PM2 dengan nama: simplebot${NC}"
-  echo -e "${YELLOW}📌 Untuk pairing QR, jalankan perintah berikut manual:${NC}"
-  echo -e "${CYAN}   cd ~/simplebot && pm2 logs simplebot${NC}"
-  echo -e "${YELLOW}📲 Scan QR-nya lewat WhatsApp setelah bot tampil log QR.${NC}"
+  echo -e "${GREEN}✅ Bot berhasil dijalankan di PM2 dengan nama: simplebot${NC}"
+  pm2 list
 fi
 
 # ==========================
 # --- Instalasi Script Xray ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "1" || "$INSTALL_OPTION" == "3" ]]; then
+if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🚀 Memulai instalasi script Xray...${NC}"
   echo -e "$LINE"
@@ -192,7 +201,7 @@ fi
 # ==========================
 # --- Hapus Bot WhatsApp ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "4" ]]; then
+if [[ "$INSTALL_OPTION" == "3" ]]; then
   echo -e "$LINE"
   echo -e "${RED}🗑️ Menghapus Bot WhatsApp...${NC}"
   echo -e "$LINE"
@@ -211,7 +220,7 @@ if [[ "$INSTALL_OPTION" == "4" ]]; then
 fi
 
 # ==========================
-# --- Penutup ---
+# --- Selesai ---
 # ==========================
 echo ""
 echo -e "$LINE"
@@ -221,9 +230,6 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "📂 ${CYAN}Xray command: add-vmess | add-vless | add-trojan | add-ss${NC}"
 elif [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "🤖 ${CYAN}Bot WA aktif dengan PM2.${NC}"
-else
-  echo -e "🤖 ${CYAN}Bot WA aktif dengan PM2.${NC}"
-  echo -e "📂 ${CYAN}Xray command: add-vmess | add-vless | add-trojan | add-ss${NC}"
 fi
 
 echo -e "$LINE"
