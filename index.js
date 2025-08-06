@@ -75,13 +75,13 @@ try {
 }
 
 const rainbowColors = [
-  '#FFFFFF',
-  '#FFFFFF',
-  '#FFFFFF',
-  '#FFFFFF',
-  '#FFFFFF',
-  '#FFFFFF',
-  '#FFFFFF'
+  '#FF0000',
+  '#FF7F00',
+  '#FFFF00',
+  '#00FF00',
+  '#0000FF',
+  '#4B0082',
+  '#9400D3'
 ]
 
 const rainbowText = [
@@ -90,10 +90,7 @@ const rainbowText = [
   `👤 Owner Name : ${global.ownername}`,
   `⚙️  Bot Type   : Case (CJS)`,
   `📦 Version     : ${global.version}`,
-  `🖥️  Node.js     : ${process.version}`,
-  ``,
-  `✅ Jika Bot berhasil terhubung!`,
-  `🔁 Reboot terlebih dahulu agar bot tetap aktif.`
+  `🖥️  Node.js     : ${process.version}`
 ]
 
 function printRainbowText(text, colors) {
