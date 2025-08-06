@@ -4,7 +4,7 @@
 # --- Konfigurasi awal ---
 # ==========================
 REPO_URL="https://github.com/Riswan481/xaraybot.git"
-TEMP_DIR="/tmp/scriptbot-install"
+TEMP_DIR="/tmp/xaraybot-install"
 WHITELIST_URL="https://raw.githubusercontent.com/Riswan481/xaraybot/main/allowed_ips.txt"
 
 # ==========================
