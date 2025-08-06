@@ -91,29 +91,53 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 ) & loading_spinner
 
 # ==========================
-# --- Hapus Bot WhatsApp ---
+# --- Instalasi Bot WA ---
 # ==========================
-if [[ "$INSTALL_OPTION" == "4" ]]; then
+if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   echo -e "$LINE"
-  echo -e "${RED}🗑️ Menghapus Bot WhatsApp...${NC}"
+  echo -e "${BLUE}🤖 Instalasi Bot WhatsApp...${NC}"
   echo -e "$LINE"
 
-  echo -ne "${YELLOW}⏳ Menghapus proses PM2...${NC}"
+  echo -ne "${YELLOW}📦 Menginstal nodejs, npm, git, jq...${NC}"
   (
-    pm2 stop simplebot
-    pm2 delete simplebot
-    pm2 save
+    apt install -y nodejs npm git jq
   ) & loading_spinner
 
-  echo -ne "${YELLOW}🧹 Menghapus folder bot (simplebot)...${NC}"
-  (rm -rf simplebot) & loading_spinner
+  echo -ne "${YELLOW}📥 Clone repo bot WhatsApp...${NC}"
+  (git clone https://github.com//Riswan481/xaraybot.git simplebot) & loading_spinner
 
-  echo -ne "${YELLOW}🧹 Menghapus PM2 global...${NC}"
-  (npm uninstall -g pm2) & loading_spinner
+  cd simplebot || exit
 
-  echo -e "${GREEN}✅ Bot berhasil dihapus.${NC}"
-  echo -e "$LINE"
-  exit 0
+  echo -ne "${YELLOW}📦 Menginstall package npm...${NC}" && (npm install) & loading_spinner
+
+  echo -ne "${YELLOW}📦 Menginstall PM2...${NC}" && (npm install -g pm2) & loading_spinner
+
+  # --- Input Nomor Owner ---
+  read -p "$(echo -e "${YELLOW}📱 Masukkan nomor WhatsApp owner (cth: 6281234567890): ${NC}")" OWNER_NUMBER
+
+  # --- Ubah global.owner di settings.js ---
+  if [[ -f settings.js ]]; then
+    if grep -q "global\.owner" settings.js; then
+      sed -i "s/global\.owner *= *\[[^]]*\]/global.owner = \['$OWNER_NUMBER'\]/" settings.js
+      echo -e "${YELLOW}✅ global.owner berhasil diatur ke: $OWNER_NUMBER${NC}"
+    else
+      echo -e "${RED}❌ Tidak ditemukan baris global.owner di settings.js${NC}"
+    fi
+  else
+    echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
+  fi
+
+  echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
+  echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu proses akan lanjut otomatis...${NC}"
+  echo ""
+  node index.js
+
+  echo -e ""
+  echo -e "${GREEN}✅ Pairing sukses. Menjalankan bot di PM2...${NC}"
+
+  pm2 start index.js --name simplebot
+  pm2 save
+  pm2 startup
 fi
 
 # ==========================
