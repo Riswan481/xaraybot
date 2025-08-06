@@ -99,18 +99,18 @@ if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   echo -e "$LINE"
 
   echo -ne "${YELLOW}📦 Menginstal nodejs, npm, git, jq...${NC}"
-  (
-    apt install -y nodejs npm git jq
-  ) & loading_spinner
+  (apt install -y nodejs npm git jq) & loading_spinner
 
   echo -ne "${YELLOW}📥 Clone repo bot WhatsApp...${NC}"
-  (git clone https://github.com//Riswan481/xaraybot.git simplebot) & loading_spinner
+  (git clone https://github.com/Riswan481/xaraybot.git simplebot) & loading_spinner
 
   cd simplebot || exit
 
-  echo -ne "${YELLOW}📦 Menginstall package npm...${NC}" && (npm install) & loading_spinner
+  echo -ne "${YELLOW}📦 Menginstall package npm...${NC}"
+  (npm install) & loading_spinner
 
-  echo -ne "${YELLOW}📦 Menginstall PM2...${NC}" && (npm install -g pm2) & loading_spinner
+  echo -ne "${YELLOW}📦 Menginstall PM2...${NC}"
+  (npm install -g pm2) & loading_spinner
 
   # --- Input Nomor Owner ---
   read -p "$(echo -e "${YELLOW}📱 Masukkan nomor WhatsApp owner (cth: 6281234567890): ${NC}")" OWNER_NUMBER
@@ -126,6 +126,10 @@ if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   else
     echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
   fi
+
+  # --- JEDA ---
+  read -n 1 -s -r -p "📌 Tekan tombol apapun untuk melanjutkan pairing WhatsApp..."
+  echo ""
 
   echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
   echo -e "${YELLOW}🕒 Tunggu sampai muncul '✅ Bot terhubung!', lalu proses akan lanjut otomatis...${NC}"
