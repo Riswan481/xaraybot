@@ -115,17 +115,17 @@ if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   # --- Input Nomor Owner ---
   read -p "$(echo -e "${YELLOW}📱 Masukkan nomor WhatsApp owner (cth: 6281234567890): ${NC}")" OWNER_NUMBER
 
-  # --- Ubah global.owner di settings.js ---
-  if [[ -f settings.js ]]; then
-    if grep -q "global\.owner" settings.js; then
-      sed -i "s/global\.owner *= *\[[^]]*\]/global.owner = \['$OWNER_NUMBER'\]/" settings.js
-      echo -e "${YELLOW}✅ global.owner berhasil diatur ke: $OWNER_NUMBER${NC}"
-    else
-      echo -e "${RED}❌ Tidak ditemukan baris global.owner di settings.js${NC}"
-    fi
+# --- Ubah global.owner jadi STRING biasa ---
+if [[ -f settings.js ]]; then
+  if grep -q "global\.owner" settings.js; then
+    sed -i -E "s/global\.owner *= *[\"'][^\"']*[\"']/global.owner = \"$OWNER_NUMBER\"/" settings.js
+    echo -e "${YELLOW}✅ global.owner berhasil diubah ke string: \"$OWNER_NUMBER\"${NC}"
   else
-    echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
+    echo -e "${RED}❌ Tidak ditemukan baris global.owner di settings.js${NC}"
   fi
+else
+  echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
+fi
 
   # --- JEDA ---
   read -n 1 -s -r -p "📌 Tekan tombol apapun untuk melanjutkan pairing WhatsApp..."
