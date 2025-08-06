@@ -42,19 +42,27 @@ loading_spinner() {
 clear
 echo -e "${YELLOW}"
 echo "═══════════════════════════════════════════════════════════════"
-echo "    🚀 INSTALLER SCRIPT XRAY & BOT WHATSAPP by RISWAN        "
+echo "    🚀 INSTALLER SCRIPT XRAY & BOT WHATSAPP/TELEGRAM by RISWAN "
 echo "═══════════════════════════════════════════════════════════════"
 echo -e "${NC}"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
 echo -e "  1) 🔐 Install Script Xray"
 echo -e "  2) 🤖 Install Bot WhatsApp"
 echo -e "  3) 🗑️ Hapus Bot WhatsApp"
+echo -e "  4) 🤖 Install Bot Telegram"
+echo -e "  5) 🗑️ Hapus Bot Telegram"
+echo -e "${CYAN}  x) Keluar${NC}"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
 
-read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3): ${NC}")" INSTALL_OPTION
+read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3/4/5/x): ${NC}")" INSTALL_OPTION
 
-if [[ "$INSTALL_OPTION" != "1" && "$INSTALL_OPTION" != "2" && "$INSTALL_OPTION" != "3" ]]; then
+if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
+  echo -e "${RED}❌ Proses dibatalkan oleh user.${NC}"
+  exit 0
+fi
+
+if ! [[ "$INSTALL_OPTION" =~ ^[1-5]$ ]]; then
   echo -e "${RED}❌ Pilihan tidak valid. Instalasi dibatalkan.${NC}"
   exit 1
 fi
@@ -90,7 +98,60 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 ) & loading_spinner
 
 # ==========================
-# --- Instalasi Bot WA ---
+# --- Install Script Xray ---
+# (Tidak diubah dari versi asli)
+# ==========================
+if [[ "$INSTALL_OPTION" == "1" ]]; then
+  echo -e "$LINE"
+  echo -e "${BLUE}🚀 Memulai instalasi script Xray...${NC}"
+  echo -e "$LINE"
+
+  echo -ne "${YELLOW}📦 Update sistem dan install curl & git...${NC}"
+  (
+    apt update -y -o Acquire::ForceIPv4=true && \
+    apt upgrade -y --no-install-recommends && \
+    apt install -y curl git
+  ) & loading_spinner
+
+  echo -ne "${YELLOW}🧹 Menghapus folder sementara lama...${NC}"
+  (rm -rf "$TEMP_DIR") & loading_spinner
+
+  echo -ne "${YELLOW}📥 Meng-clone repo: $REPO_URL ...${NC}"
+  (git clone "$REPO_URL" "$TEMP_DIR") & loading_spinner
+
+  echo -ne "${YELLOW}📁 Membuat folder /etc/xray...${NC}"
+  (mkdir -p /etc/xray) & loading_spinner
+
+  echo -ne "${YELLOW}📂 Menyalin file script ke /etc/xray...${NC}"
+  (
+    cp "$TEMP_DIR/add-vmess" /etc/xray/
+    cp "$TEMP_DIR/add-vless" /etc/xray/
+    cp "$TEMP_DIR/add-trojan" /etc/xray/
+    cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
+  ) & loading_spinner
+
+  echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
+  (
+    chmod +x /etc/xray/add-vmess
+    chmod +x /etc/xray/add-vless
+    chmod +x /etc/xray/add-trojan
+    chmod +x /etc/xray/add-ss 2>/dev/null || true
+  ) & loading_spinner
+
+  echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
+  (
+    ln -sf /etc/xray/add-vmess /usr/bin/add-vmess
+    ln -sf /etc/xray/add-vless /usr/bin/add-vless
+    ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
+    ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
+  ) & loading_spinner
+
+  echo -ne "${YELLOW}🧽 Menghapus folder sementara...${NC}"
+  (rm -rf "$TEMP_DIR") & loading_spinner
+fi
+
+# ==========================
+# --- Install Bot WhatsApp ---
 # ==========================
 if [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "$LINE"
@@ -147,58 +208,6 @@ if [[ "$INSTALL_OPTION" == "2" ]]; then
 fi
 
 # ==========================
-# --- Instalasi Script Xray ---
-# ==========================
-if [[ "$INSTALL_OPTION" == "1" ]]; then
-  echo -e "$LINE"
-  echo -e "${BLUE}🚀 Memulai instalasi script Xray...${NC}"
-  echo -e "$LINE"
-
-  echo -ne "${YELLOW}📦 Update sistem dan install curl & git...${NC}"
-  (
-    apt update -y -o Acquire::ForceIPv4=true && \
-    apt upgrade -y --no-install-recommends && \
-    apt install -y curl git
-  ) & loading_spinner
-
-  echo -ne "${YELLOW}🧹 Menghapus folder sementara lama...${NC}"
-  (rm -rf "$TEMP_DIR") & loading_spinner
-
-  echo -ne "${YELLOW}📥 Meng-clone repo: $REPO_URL ...${NC}"
-  (git clone "$REPO_URL" "$TEMP_DIR") & loading_spinner
-
-  echo -ne "${YELLOW}📁 Membuat folder /etc/xray...${NC}"
-  (mkdir -p /etc/xray) & loading_spinner
-
-  echo -ne "${YELLOW}📂 Menyalin file script ke /etc/xray...${NC}"
-  (
-    cp "$TEMP_DIR/add-vmess" /etc/xray/
-    cp "$TEMP_DIR/add-vless" /etc/xray/
-    cp "$TEMP_DIR/add-trojan" /etc/xray/
-    cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
-  ) & loading_spinner
-
-  echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
-  (
-    chmod +x /etc/xray/add-vmess
-    chmod +x /etc/xray/add-vless
-    chmod +x /etc/xray/add-trojan
-    chmod +x /etc/xray/add-ss 2>/dev/null || true
-  ) & loading_spinner
-
-  echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
-  (
-    ln -sf /etc/xray/add-vmess /usr/bin/add-vmess
-    ln -sf /etc/xray/add-vless /usr/bin/add-vless
-    ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
-    ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
-  ) & loading_spinner
-
-  echo -ne "${YELLOW}🧽 Menghapus folder sementara...${NC}"
-  (rm -rf "$TEMP_DIR") & loading_spinner
-fi
-
-# ==========================
 # --- Hapus Bot WhatsApp ---
 # ==========================
 if [[ "$INSTALL_OPTION" == "3" ]]; then
@@ -220,6 +229,48 @@ if [[ "$INSTALL_OPTION" == "3" ]]; then
 fi
 
 # ==========================
+# --- Install Bot Telegram ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "4" ]]; then
+  echo -e "$LINE"
+  echo -e "${BLUE}🤖 Instalasi Bot Telegram...${NC}"
+  echo -e "$LINE"
+
+  echo -e "${CYAN}[1]${NC} Mengupdate sistem dan install Node.js..."
+  apt update && apt install -y nodejs npm git unzip curl
+  sleep 1
+
+  echo -e "${CYAN}[2]${NC} Clone repo bot-regist..."
+  git clone https://github.com/Riswan481/bot-regist.git
+  cd bot-regist || { echo -e "${RED}❌ Gagal masuk ke folder bot-regist${NC}"; exit 1; }
+
+  echo -e "${CYAN}[3]${NC} Install dependency npm..."
+  npm install
+  npm install -g pm2
+
+  echo -e "${CYAN}[4]${NC} Menjalankan bot dengan PM2..."
+  pm2 start bot.js --name Bot-Register
+  pm2 save
+
+  echo -e "${GREEN}✅ Bot Telegram berhasil dijalankan!${NC}"
+  echo -e "${YELLOW}🔁 Jalankan ulang setelah reboot dengan: ${CYAN}pm2 resurrect${NC}"
+fi
+
+# ==========================
+# --- Hapus Bot Telegram ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "5" ]]; then
+  echo -e "$LINE"
+  echo -e "${RED}🗑️ Menghapus Bot Telegram...${NC}"
+  echo -e "$LINE"
+
+  echo -e "${CYAN}[🔄] Menghapus bot dan folder terkait...${NC}"
+  pm2 delete Bot-Register 2>/dev/null
+  rm -rf bot-regist
+  echo -e "${GREEN}✅ Bot Telegram berhasil dihapus dari VPS.${NC}"
+fi
+
+# ==========================
 # --- Selesai ---
 # ==========================
 echo ""
@@ -230,18 +281,8 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "📂 ${CYAN}Xray command: add-vmess | add-vless | add-trojan | add-ss${NC}"
 elif [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "🤖 ${CYAN}Bot WA aktif dengan PM2.${NC}"
+elif [[ "$INSTALL_OPTION" == "4" ]]; then
+  echo -e "🤖 ${CYAN}Bot Telegram aktif dengan PM2.${NC}"
 fi
 
 echo -e "$LINE"
-echo -e "${BLUE}"
-cat << "EOF"
-   __  __      ____        _   
-  |  \/  |_ __| __ )  ___ | |_ 
-  | |\/| | '__|  _ \ / _ \| __|
-  | |  | | |  | |_) | (_) | |_ 
-  |_|  |_|_|  |____/ \___/ \__|
-
-EOF
-echo -e "${CYAN}        ✅ Xray & Bot WA Installer by Riswan ✅${NC}"
-echo -e "$LINE"
-echo -e "${GREEN}🎉 Semua proses selesai tanpa error. Silakan gunakan fiturnya!${NC}"
