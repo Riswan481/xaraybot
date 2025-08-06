@@ -124,7 +124,7 @@ if [[ "$INSTALL_OPTION" == "2" ]]; then
     echo -e "${RED}❌ File settings.js tidak ditemukan!${NC}"
   fi
 
-  read -n 1 -s -r -p "📌 Tekan tombol apapun untuk melanjutkan pairing WhatsApp..."
+  read -n 1 -s -r -p "➡️ Enter untuk melanjutkan pairing WhatsApp..."
   echo ""
 
   echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
