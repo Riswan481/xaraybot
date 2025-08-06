@@ -193,14 +193,14 @@ if [[ "$INSTALL_OPTION" == "2" || "$INSTALL_OPTION" == "3" ]]; then
   echo -ne "${YELLOW}📦 Menginstall package npm...${NC}" && (npm install) & loading_spinner
   echo -ne "${YELLOW}📦 Menginstall PM2...${NC}" && (npm install -g pm2) & loading_spinner
 
-  # Tambahkan atau update owner number
-  if grep -q "global\.owner *= *\"" $SETTINGS_FILE; then
-    sed -i "s/global\.owner *= *\"[^\"]*\"/global.owner = \"$OWNER_NUMBER\"/" $SETTINGS_FILE
-    echo -e "${YELLOW}✅ global.owner berhasil diatur ke: $OWNER_NUMBER${NC}"
-  else
-    echo "global.owner = \"$OWNER_NUMBER\"" >> $SETTINGS_FILE
-    echo -e "${YELLOW}⚠️ Baris global.owner belum ada, ditambahkan manual.${NC}"
-  fi
+# Tambahkan atau update owner number di settings.js
+if grep -q "global\.owner *= *\"" $SETTINGS_FILE; then
+  sed -i "s|global\.owner *= *\"[^\"]*\".*|global.owner = \"$OWNER_NUMBER\" // Owner number|" $SETTINGS_FILE
+  echo -e "${YELLOW}✅ global.owner berhasil diperbarui: $OWNER_NUMBER${NC}"
+else
+  echo -e "\nglobal.owner = \"$OWNER_NUMBER\" // Owner number" >> $SETTINGS_FILE
+  echo -e "${YELLOW}⚠️ Baris global.owner belum ada, ditambahkan manual.${NC}"
+fi
   sleep 3
 
   echo -e "${YELLOW}🔑 Menjalankan pairing WhatsApp...${NC}"
