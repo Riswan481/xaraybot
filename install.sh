@@ -51,6 +51,7 @@ echo -e "  2) 🤖 Install Bot WhatsApp"
 echo -e "  3) 🗑️ Hapus Bot WhatsApp"
 echo -e "  4) 🤖 Install Bot Telegram"
 echo -e "  5) 🗑️ Hapus Bot Telegram"
+echo -e "  6) 🤖 Install Bot Sellvpn"
 echo -e "${CYAN}  x) Keluar${NC}"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
@@ -257,6 +258,118 @@ if [[ "$INSTALL_OPTION" == "4" ]]; then
 fi
 
 # ==========================
+# --- Install BotVPN4 (Telegram) ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "6" ]]; then
+  echo -e "$LINE"
+  echo -e "${BLUE}🤖 Instalasi BotVPN4 (Bot Order VPN Otomatis)...${NC}"
+  echo -e "$LINE"
+
+  echo -e "${YELLOW}🧹 Menghapus bot lama jika ada...${NC}"
+  systemctl stop sellvpn.service 2>/dev/null
+  systemctl disable sellvpn.service 2>/dev/null
+  rm -f /etc/systemd/system/sellvpn.service
+  rm -f /usr/bin/sellvpn /usr/bin/server_sellvpn /etc/cron.d/server_sellvpn
+  rm -rf /root/BotVPN4
+  if command -v pm2 &> /dev/null; then
+      pm2 delete sellvpn &> /dev/null
+      pm2 save &> /dev/null
+  fi
+  systemctl daemon-reload
+
+  echo -e "${YELLOW}📦 Install Node.js & Dependency...${NC}"
+  curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+  apt-get install -y nodejs
+  npm install -g npm@10
+  apt update
+  apt install -y build-essential libcairo2-dev libpango1.0-dev \
+      libjpeg-dev libgif-dev librsvg2-dev pkg-config libpixman-1-dev git curl cron
+
+  echo -e "${YELLOW}📥 Clone BotVPN4...${NC}"
+  git clone https://github.com/script-vpn-premium/BotVPN4.git /root/BotVPN4
+  cd /root/BotVPN4 || exit
+
+  echo -e "${YELLOW}📦 Install package NPM...${NC}"
+  npm install sqlite3 express crypto telegraf axios dotenv canvas node-fetch form-data
+  npm rebuild canvas
+  rm -rf node_modules
+  npm install
+  npm uninstall node-fetch
+  npm install node-fetch@2
+  chmod +x /root/BotVPN4/*
+
+  echo -e "${YELLOW}📝 Konfigurasi BotVPN4...${NC}"
+  timedatectl set-timezone Asia/Jakarta
+
+  read -p "Masukkan token bot: " token
+  read -p "Masukkan admin ID: " adminid
+  read -p "Masukkan nama store: " namastore
+  read -p "Masukkan DATA QRIS: " dataqris
+  read -p "Masukkan MERCHANT ID: " merchantid
+  read -p "Masukkan API KEY: " apikey
+  read -p "Masukkan Chat ID Group Telegram: " chatid_group
+  read -p "Masukkan Username Saweria: " username_saweria
+  read -p "Masukkan Email Saweria: " saweria_email
+
+  cat >/root/BotVPN4/.vars.json <<EOF
+{
+  "BOT_TOKEN": "$token",
+  "USER_ID": "$adminid",
+  "NAMA_STORE": "$namastore",
+  "PORT": "50123",
+  "DATA_QRIS": "$dataqris",
+  "MERCHANT_ID": "$merchantid",
+  "API_KEY": "$apikey",
+  "GROUP_CHAT_ID": "$chatid_group",
+  "SAWERIA_USERNAME": "$username_saweria",
+  "SAWERIA_EMAIL": "$saweria_email"
+}
+EOF
+
+  NODE_PATH=$(which node)
+  if [ -z "$NODE_PATH" ]; then
+      echo -e "${RED}❌ Node.js tidak ditemukan. Gagal lanjut.${NC}"
+      exit 1
+  fi
+
+  cat >/usr/bin/sellvpn <<EOF
+#!/bin/bash
+cd /root/BotVPN4 || exit 1
+$NODE_PATH app.js
+EOF
+  chmod +x /usr/bin/sellvpn
+
+  cat >/etc/systemd/system/sellvpn.service <<EOF
+[Unit]
+Description=App Bot sellvpn Service
+After=network.target
+
+[Service]
+ExecStart=$NODE_PATH /root/BotVPN4/app.js
+WorkingDirectory=/root/BotVPN4
+Restart=always
+RestartSec=3
+User=root
+Environment=NODE_ENV=production
+Environment=TZ=Asia/Jakarta
+StandardOutput=append:/var/log/sellvpn.log
+StandardError=append:/var/log/sellvpn-error.log
+LimitNOFILE=10000
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+  systemctl daemon-reload
+  systemctl enable sellvpn
+  systemctl start sellvpn
+  service cron restart
+
+  echo -e "${GREEN}✅ BotVPN4 berhasil diinstal dan berjalan.${NC}"
+  echo -e "📡 Status Service: $(systemctl is-active sellvpn)"
+fi
+
+# ==========================
 # --- Hapus Bot Telegram ---
 # ==========================
 if [[ "$INSTALL_OPTION" == "5" ]]; then
@@ -273,6 +386,8 @@ fi
 # ==========================
 # --- Selesai ---
 # ==========================
+elif [[ "$INSTALL_OPTION" == "6" ]]; then
+  echo -e "🤖 ${CYAN}BotVPN4 aktif dan berjalan dengan systemd (sellvpn.service).${NC}"
 echo ""
 echo -e "$LINE"
 echo -e "${GREEN}✅ Instalasi selesai!${NC}"
