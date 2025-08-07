@@ -18,6 +18,13 @@ cd ~/simplebot
 pm2 start index.js --name simplebot
 pm2 save
 ```
+## Atau ini 
+```bash
+cd ~/simplebot
+pm2 start index.js --name simplebot
+pm2 save
+pm2 startup
+```
 ---
 
 ## Stop pm
