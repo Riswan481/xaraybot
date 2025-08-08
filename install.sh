@@ -20,20 +20,20 @@ LINE="${CYAN}
 ═══════════════════════════════════════════════════════════════${NC}"
 
 # ==========================
-# --- Fungsi loading ---
+# --- Fungsi loading spinner ---
 # ==========================
 loading_spinner() {
   local pid=$!
   local delay=0.1
   local spinstr='|/-\\'
-  while kill -0 $pid 2>/dev/null; do
+  while kill -0 "$pid" 2>/dev/null; do
     local temp=${spinstr#?}
     printf " [%c]  " "$spinstr"
     spinstr=$temp${spinstr%"$temp"}
-    sleep $delay
+    sleep "$delay"
     printf "\b\b\b\b\b\b"
   done
-  wait $pid
+  wait "$pid"
 }
 
 # ==========================
@@ -77,7 +77,7 @@ echo -e "🌐 ${YELLOW}IP VPS Kamu:${NC} $MY_IP"
 echo -e "🔍 ${YELLOW}Mengecek izin akses...${NC}"
 echo -e "$LINE"
 
-if curl -s "$WHITELIST_URL" | grep -q "$MY_IP"; then
+if curl -s "$WHITELIST_URL" | grep -qw "$MY_IP"; then
   echo -e "✅ ${GREEN}IP kamu terdaftar di whitelist.${NC}"
 else
   echo -e "❌ ${RED}Maaf, IP kamu ($MY_IP) tidak terdaftar di whitelist.${NC}"
@@ -97,10 +97,10 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
     sed -i 's|http://deb.debian.org|http://kartolo.sby.datautama.net.id/debian|g' /etc/apt/sources.list
   fi
 ) & loading_spinner
+echo ""
 
 # ==========================
 # --- Install Script Xray ---
-# (Tidak diubah dari versi asli)
 # ==========================
 if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "$LINE"
@@ -113,15 +113,19 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     apt upgrade -y --no-install-recommends && \
     apt install -y curl git
   ) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}🧹 Menghapus folder sementara lama...${NC}"
   (rm -rf "$TEMP_DIR") & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}📥 Meng-clone repo: $REPO_URL ...${NC}"
   (git clone "$REPO_URL" "$TEMP_DIR") & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}📁 Membuat folder /etc/xray...${NC}"
   (mkdir -p /etc/xray) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}📂 Menyalin file script ke /etc/xray...${NC}"
   (
@@ -130,6 +134,7 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     cp "$TEMP_DIR/add-trojan" /etc/xray/
     cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
   ) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
   (
@@ -138,6 +143,7 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     chmod +x /etc/xray/add-trojan
     chmod +x /etc/xray/add-ss 2>/dev/null || true
   ) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
   (
@@ -146,9 +152,11 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
     ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
   ) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}🧽 Menghapus folder sementara...${NC}"
   (rm -rf "$TEMP_DIR") & loading_spinner
+  echo ""
 fi
 
 # ==========================
@@ -161,20 +169,25 @@ if [[ "$INSTALL_OPTION" == "2" ]]; then
 
   echo -ne "${YELLOW}📦 Menginstal nodejs, npm, git, jq...${NC}"
   (apt install -y nodejs npm git jq) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}📥 Clone repo bot WhatsApp...${NC}"
-  (git clone https://github.com/Riswan481/xaraybot.git simplebot) & loading_spinner
+  (rm -rf simplebot; git clone https://github.com/Riswan481/xaraybot.git simplebot) & loading_spinner
+  echo ""
 
-  cd simplebot || exit
+  cd simplebot || { echo -e "${RED}❌ Gagal masuk ke folder simplebot${NC}"; exit 1; }
 
   echo -ne "${YELLOW}📦 Menginstall package npm...${NC}"
   (npm install) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}📦 Menginstall cheerio secara eksplisit...${NC}"
   (npm install cheerio) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}📦 Menginstall PM2...${NC}"
   (npm install -g pm2) & loading_spinner
+  echo ""
 
   read -p "$(echo -e "${YELLOW}📱 Masukkan nomor WhatsApp owner (cth: 6281234567890): ${NC}")" OWNER_NUMBER
 
@@ -201,7 +214,7 @@ if [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e ""
   echo -e "${GREEN}✅ Pairing sukses. Menjalankan bot di PM2...${NC}"
 
-  pm2 delete simplebot 2>/dev/null
+  pm2 delete simplebot 2>/dev/null || true
   pm2 start index.js --name simplebot
   pm2 save
   pm2 startup
@@ -220,13 +233,15 @@ if [[ "$INSTALL_OPTION" == "3" ]]; then
 
   echo -ne "${YELLOW}📍 Menghapus folder simplebot...${NC}"
   (rm -rf simplebot) & loading_spinner
+  echo ""
 
   echo -ne "${YELLOW}🧹 Menghapus PM2 dan proses bot...${NC}"
   (
-    pm2 stop simplebot >/dev/null 2>&1
-    pm2 delete simplebot >/dev/null 2>&1
+    pm2 stop simplebot >/dev/null 2>&1 || true
+    pm2 delete simplebot >/dev/null 2>&1 || true
     pm2 save
   ) & loading_spinner
+  echo ""
 
   echo -e "${GREEN}✅ Bot WhatsApp berhasil dihapus.${NC}"
 fi
@@ -242,8 +257,8 @@ if [[ "$INSTALL_OPTION" == "4" ]]; then
   echo -e "${CYAN}[1]${NC} Mengupdate sistem dan install Node.js..."
   apt update && apt install -y nodejs npm git unzip curl
   sleep 1
-
-  echo -e "${CYAN}[2]${NC} Clone repo bot-regist..."
+echo -e "${CYAN}[2]${NC} Clone repo bot-regist..."
+  rm -rf bot-regist
   git clone https://github.com/Riswan481/bot-regist.git
   cd bot-regist || { echo -e "${RED}❌ Gagal masuk ke folder bot-regist${NC}"; exit 1; }
 
@@ -252,6 +267,7 @@ if [[ "$INSTALL_OPTION" == "4" ]]; then
   npm install -g pm2
 
   echo -e "${CYAN}[4]${NC} Menjalankan bot dengan PM2..."
+  pm2 delete Bot-Register 2>/dev/null || true
   pm2 start bot.js --name Bot-Register
   pm2 save
 
@@ -394,7 +410,8 @@ cd /root/BotVPN4 || exit 1
 $NODE_PATH app.js
 EOF
     chmod +x /usr/bin/sellvpn
-# Buat systemd service
+
+    # Buat systemd service
     cat >/etc/systemd/system/sellvpn.service <<EOF
 [Unit]
 Description=App Bot sellvpn Service
@@ -449,7 +466,7 @@ if [[ "$INSTALL_OPTION" == "5" ]]; then
   echo -e "$LINE"
 
   echo -e "${CYAN}[🔄] Menghapus bot dan folder terkait...${NC}"
-  pm2 delete Bot-Register 2>/dev/null
+  pm2 delete Bot-Register 2>/dev/null || true
   rm -rf bot-regist
   echo -e "${GREEN}✅ Bot Telegram berhasil dihapus dari VPS.${NC}"
 fi
@@ -472,4 +489,3 @@ elif [[ "$INSTALL_OPTION" == "6" ]]; then
 fi
 
 echo -e "$LINE"
-    
