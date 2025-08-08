@@ -99,9 +99,6 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     apt install -y curl git
   ) & loading_spinner
 
-  echo -ne "${YELLOW}🧹 Menghapus folder sementara lama...${NC}"
-  (rm -rf "$TEMP_DIR") & loading_spinner
-
   echo -ne "${YELLOW}📥 Meng-clone repo: $REPO_URL ...${NC}"
   (git clone "$REPO_URL" "$TEMP_DIR") & loading_spinner
 
@@ -131,9 +128,6 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
     ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
   ) & loading_spinner
-
-  echo -ne "${YELLOW}🧽 Menghapus folder sementara...${NC}"
-  (rm -rf "$TEMP_DIR") & loading_spinner
 
   echo -e "${GREEN}✅ Instalasi Xray selesai.${NC}"
 fi
