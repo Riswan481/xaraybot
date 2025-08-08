@@ -19,13 +19,6 @@ NC='\033[0m'
 LINE="${CYAN}
 ═══════════════════════════════════════════════════════════════${NC}"
 
-# Warna tambahan untuk Bot SellVPN
-orange="\e[38;5;130m"
-blue_bsvpn="\e[38;5;39m"
-green_bsvpn="\e[38;5;82m"
-red_bsvpn="\e[38;5;196m"
-neutral_bsvpn="\e[0m"
-
 # ==========================
 # --- Fungsi loading ---
 # ==========================
@@ -44,157 +37,6 @@ loading_spinner() {
 }
 
 # ==========================
-# --- Fungsi Bot SellVPN ---
-# ==========================
-hapus_bot_lama() {
-    echo -e "${orange}Menghapus bot lama...${neutral_bsvpn}"
-    systemctl stop sellvpn.service 2>/dev/null
-    systemctl disable sellvpn.service 2>/dev/null
-    rm -f /etc/systemd/system/sellvpn.service
-    rm -f /usr/bin/sellvpn /usr/bin/server_sellvpn /etc/cron.d/server_sellvpn
-    rm -rf /root/BotVPN4
-
-    if command -v pm2 &>/dev/null; then
-        pm2 delete sellvpn &>/dev/null
-        pm2 save &>/dev/null
-    fi
-
-    systemctl daemon-reload
-    echo -e "${green_bsvpn}Bot lama berhasil dihapus.${neutral_bsvpn}"
-}
-
-pasang_package() {
-    echo -e "${blue_bsvpn}Memulai pengecekan dan instalasi dependensi...${neutral_bsvpn}"
-
-    # Install Node.js v20 (stable)
-    if ! command -v node >/dev/null 2>&1 || ! node -v | grep -q 'v20'; then
-        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-        apt-get install -y nodejs
-    fi
-
-    # Downgrade npm ke versi 10 untuk kompatibilitas
-    npm install -g npm@10
-
-    # Install dependensi APT lainnya
-    apt update
-    apt install -y build-essential libcairo2-dev libpango1.0-dev \
-        libjpeg-dev libgif-dev librsvg2-dev pkg-config libpixman-1-dev git curl cron
-}
-
-setup_bot() {
-    timedatectl set-timezone Asia/Jakarta
-
-    if [ ! -d /root/BotVPN4 ]; then
-        git clone https://github.com/script-vpn-premium/BotVPN4.git /root/BotVPN4
-    fi
-
-    cd /root/BotVPN4 || { echo -e "${red_bsvpn}Gagal masuk folder /root/BotVPN4${neutral_bsvpn}"; exit 1; }
-
-    npm install sqlite3 express crypto telegraf axios dotenv canvas node-fetch form-data
-    npm rebuild canvas
-
-    # Pastikan modul node-fetch versi 2
-    npm uninstall node-fetch
-    npm install node-fetch@2
-
-    chmod +x /root/BotVPN4/*
-}
-
-server_app() {
-    clear
-    echo -e "${orange}────────────────────────────────────────────${neutral_bsvpn}"
-    echo -e "${CYAN}🎉 Selamat Datang di Bot Order VPN Otomatis 🎉${NC}"
-    echo -e "${GREEN}🔐 Layanan VPN Premium • Cepat • Mudah • Aman${NC}"
-    echo -e "${BLUE}🤖 Powered by RISWAN - Bot Telegram Modifikasi${NC}"
-    echo -e "${orange}────────────────────────────────────────────${neutral_bsvpn}"
-
-    read -p "Masukkan token bot: " token
-    while [ -z "$token" ]; do read -p "Masukkan token bot: " token; done
-
-    read -p "Masukkan admin ID: " adminid
-    while [ -z "$adminid" ]; do read -p "Masukkan admin ID: " adminid; done
-
-    read -p "Masukkan nama store: " namastore
-    while [ -z "$namastore" ]; do read -p "Masukkan nama store: " namastore; done
-
-    read -p "Masukkan DATA QRIS: " dataqris
-    while [ -z "$dataqris" ]; do read -p "Masukkan DATA QRIS: " dataqris; done
-
-    read -p "Masukkan MERCHANT ID: " merchantid
-    while [ -z "$merchantid" ]; do read -p "Masukkan MERCHANT ID: " merchantid; done
-
-    read -p "Masukkan API KEY: " apikey
-    while [ -z "$apikey" ]; do read -p "Masukkan API KEY: " apikey; done
-
-    read -p "Masukkan Chat ID Group Telegram: " chatid_group
-    while [ -z "$chatid_group" ]; do read -p "Masukkan Chat ID Group Telegram: " chatid_group; done
-
-    read -p "Masukkan Username Saweria: " username_saweria
-    while [ -z "$username_saweria" ]; do read -p "Masukkan Username Saweria: " username_saweria; done
-
-    read -p "Masukkan Email Saweria: " saweria_email
-    while [ -z "$saweria_email" ]; do read -p "Masukkan Email Saweria: " saweria_email; done
-
-    cat >/root/BotVPN4/.vars.json <<EOF
-{
-  "BOT_TOKEN": "$token",
-  "USER_ID": "$adminid",
-  "NAMA_STORE": "$namastore",
-  "PORT": "50123",
-  "DATA_QRIS": "$dataqris",
-  "MERCHANT_ID": "$merchantid",
-  "API_KEY": "$apikey",
-  "GROUP_CHAT_ID": "$chatid_group",
-  "SAWERIA_USERNAME": "$username_saweria",
-  "SAWERIA_EMAIL": "$saweria_email"
-}
-EOF
-
-    NODE_PATH=$(which node)
-    if [ -z "$NODE_PATH" ]; then
-        echo -e "${red_bsvpn}Node.js tidak ditemukan. Pastikan Node.js sudah terinstall.${neutral_bsvpn}"
-        exit 1
-    fi
-    echo -e "${green_bsvpn}Node.js ditemukan di: $NODE_PATH${neutral_bsvpn}"
-
-    cat >/usr/bin/sellvpn <<EOF
-#!/bin/bash
-cd /root/BotVPN4 || exit 1
-$NODE_PATH app.js
-EOF
-    chmod +x /usr/bin/sellvpn
-
-    cat >/etc/systemd/system/sellvpn.service <<EOF
-[Unit]
-Description=App Bot SellVPN Service
-After=network.target
-
-[Service]
-ExecStart=$NODE_PATH /root/BotVPN4/app.js
-WorkingDirectory=/root/BotVPN4
-Restart=always
-RestartSec=3
-User=root
-Environment=NODE_ENV=production
-Environment=TZ=Asia/Jakarta
-StandardOutput=append:/var/log/sellvpn.log
-StandardError=append:/var/log/sellvpn-error.log
-LimitNOFILE=10000
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    systemctl daemon-reload
-    systemctl enable sellvpn
-    systemctl restart sellvpn
-    service cron restart
-
-    echo -e "Status Server: $(systemctl is-active sellvpn)"
-    echo -e "${green_bsvpn}Bot berhasil diinstal dan sedang berjalan.${neutral_bsvpn}"
-}
-
-# ==========================
 # --- Menu Pilihan ---
 # ==========================
 clear
@@ -209,7 +51,7 @@ echo -e "  2) 🤖 Install Bot WhatsApp"
 echo -e "  3) 🗑️ Hapus Bot WhatsApp"
 echo -e "  4) 🤖 Install Bot Telegram"
 echo -e "  5) 🗑️ Hapus Bot Telegram"
-echo -e "  6) 🤖 Install Bot SellVPN"
+echo -e "  6) 🤖 Install Bot Sellvpn"
 echo -e "${CYAN}  x) Keluar${NC}"
 echo "═══════════════════════════════════════════════════════════════"
 echo ""
@@ -257,11 +99,10 @@ echo -ne "${YELLOW}🌐 Mengganti mirror APT...${NC}"
 ) & loading_spinner
 
 # ==========================
-# --- Proses Instalasi ---
+# --- Install Script Xray ---
+# (Tidak diubah dari versi asli)
 # ==========================
-
 if [[ "$INSTALL_OPTION" == "1" ]]; then
-  # Install Script Xray (tidak diubah)
   echo -e "$LINE"
   echo -e "${BLUE}🚀 Memulai instalasi script Xray...${NC}"
   echo -e "$LINE"
@@ -308,9 +149,12 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
 
   echo -ne "${YELLOW}🧽 Menghapus folder sementara...${NC}"
   (rm -rf "$TEMP_DIR") & loading_spinner
+fi
 
-elif [[ "$INSTALL_OPTION" == "2" ]]; then
-  # Install Bot WhatsApp (tidak diubah)
+# ==========================
+# --- Install Bot WhatsApp ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi Bot WhatsApp...${NC}"
   echo -e "$LINE"
@@ -362,9 +206,12 @@ elif [[ "$INSTALL_OPTION" == "2" ]]; then
 
   echo -e "${GREEN}✅ Bot berhasil dijalankan di PM2 dengan nama: simplebot${NC}"
   pm2 list
+fi
 
-elif [[ "$INSTALL_OPTION" == "3" ]]; then
-  # Hapus Bot WhatsApp
+# ==========================
+# --- Hapus Bot WhatsApp ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "3" ]]; then
   echo -e "$LINE"
   echo -e "${RED}🗑️ Menghapus Bot WhatsApp...${NC}"
   echo -e "$LINE"
@@ -380,9 +227,12 @@ elif [[ "$INSTALL_OPTION" == "3" ]]; then
   ) & loading_spinner
 
   echo -e "${GREEN}✅ Bot WhatsApp berhasil dihapus.${NC}"
+fi
 
-elif [[ "$INSTALL_OPTION" == "4" ]]; then
-  # Install Bot Telegram
+# ==========================
+# --- Install Bot Telegram ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "4" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi Bot Telegram...${NC}"
   echo -e "$LINE"
@@ -395,92 +245,200 @@ elif [[ "$INSTALL_OPTION" == "4" ]]; then
   git clone https://github.com/Riswan481/bot-regist.git
   cd bot-regist || { echo -e "${RED}❌ Gagal masuk ke folder bot-regist${NC}"; exit 1; }
 
-# -- Lanjutan pilihan 4 (Install Bot Telegram) --
+  echo -e "${CYAN}[3]${NC} Install dependency npm..."
+  npm install
+  npm install -g pm2
 
-echo -e "${CYAN}[3]${NC} Install dependensi npm..."
-npm install
-npm install node-fetch@2 --save
-npm rebuild canvas
+  echo -e "${CYAN}[4]${NC} Menjalankan bot dengan PM2..."
+  pm2 start bot.js --name Bot-Register
+  pm2 save
 
-echo -e "${CYAN}[4]${NC} Menyiapkan file konfigurasi..."
-# User diminta input konfigurasi
-read -p "Masukkan token bot Telegram: " bot_token
-while [ -z "$bot_token" ]; do read -p "Masukkan token bot Telegram: " bot_token; done
+  echo -e "${GREEN}✅ Bot Telegram berhasil dijalankan!${NC}"
+  echo -e "${YELLOW}🔁 Jalankan ulang setelah reboot dengan: ${CYAN}pm2 resurrect${NC}"
+fi
 
-read -p "Masukkan admin ID Telegram: " admin_id
-while [ -z "$admin_id" ]; do read -p "Masukkan admin ID Telegram: " admin_id; done
+# ==========================
+# --- Install BotVPN4 (Telegram) ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "6" ]]; then
+  echo -e "$LINE"
+  echo -e "${BLUE}🤖 Instalasi BotVPN4 (Bot Order VPN Otomatis)...${NC}"
+  echo -e "$LINE"
 
-cat > config.json <<EOF
+  # Fungsi hapus bot lama
+  hapus_bot_lama() {
+    echo -e "${YELLOW}🗑️ Menghapus bot lama jika ada...${NC}"
+    systemctl stop sellvpn.service 2>/dev/null
+    systemctl disable sellvpn.service 2>/dev/null
+    rm -f /etc/systemd/system/sellvpn.service
+    rm -f /usr/bin/sellvpn /usr/bin/server_sellvpn /etc/cron.d/server_sellvpn
+    rm -rf /root/BotVPN4
+
+    if command -v pm2 &> /dev/null; then
+      pm2 delete sellvpn &> /dev/null
+      pm2 save &> /dev/null
+    fi
+
+    systemctl daemon-reload
+    echo -e "${GREEN}✅ Bot lama berhasil dihapus.${NC}"
+  }
+
+  # Fungsi pasang dependencies dan nodejs
+  pasang_package() {
+    echo -e "${YELLOW}📦 Memulai pengecekan dan instalasi dependensi...${NC}"
+    if ! command -v node >/dev/null 2>&1 || ! node -v | grep -q 'v20'; then
+      curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+      apt-get install -y nodejs
+    fi
+
+    npm install -g npm@10
+
+    apt update
+    apt install -y build-essential libcairo2-dev libpango1.0-dev \
+      libjpeg-dev libgif-dev librsvg2-dev pkg-config libpixman-1-dev git curl cron
+  }
+
+  # Fungsi setup bot dan npm install
+  setup_bot() {
+    timedatectl set-timezone Asia/Jakarta
+
+    if [ ! -d /root/BotVPN4 ]; then
+      git clone https://github.com/script-vpn-premium/BotVPN4.git /root/BotVPN4
+    else
+      echo -e "${YELLOW}📁 Folder BotVPN4 sudah ada, melakukan update...${NC}"
+      cd /root/BotVPN4 && git pull
+    fi
+
+    cd /root/BotVPN4 || exit 1
+    npm install sqlite3 express crypto telegraf axios dotenv canvas node-fetch form-data
+    npm rebuild canvas
+    rm -rf node_modules
+    npm install
+    npm uninstall node-fetch
+    npm install node-fetch@2
+    chmod +x /root/BotVPN4/*
+  }
+
+  # Fungsi konfigurasi input dan systemd service
+  setup_service() {
+    clear
+    echo -e "${CYAN}────────────────────────────────────────────${NC}"
+    echo -e "${GREEN}🎉 Selamat Datang di Bot Order VPN Otomatis 🎉${NC}"
+    echo -e "${BLUE}🤖 Powered by RISWAN - Bot Telegram Modifikasi${NC}"
+    echo -e "${CYAN}────────────────────────────────────────────${NC}"
+
+    # Fungsi input validasi agar tidak kosong
+    input_non_empty() {
+      local varname=$1
+      local prompt=$2
+      local input
+      while true; do
+        read -p "$prompt" input
+        if [[ -z "$input" ]]; then
+          echo -e "${RED}⚠️ Input tidak boleh kosong! Coba lagi.${NC}"
+        else
+          eval $varname="'$input'"
+          break
+        fi
+      done
+    }
+
+    input_non_empty token "Masukkan token bot: "
+    input_non_empty adminid "Masukkan admin ID: "
+    input_non_empty namastore "Masukkan nama store: "
+    input_non_empty dataqris "Masukkan DATA QRIS: "
+    input_non_empty merchantid "Masukkan MERCHANT ID: "
+    input_non_empty apikey "Masukkan API KEY: "
+    input_non_empty chatid_group "Masukkan Chat ID Group Telegram: "
+    input_non_empty username_saweria "Masukkan Username Saweria: "
+    input_non_empty saweria_email "Masukkan Email Saweria: "
+
+    # Simpan konfigurasi ke file .vars.json dengan value benar
+    cat >/root/BotVPN4/.vars.json <<EOF
 {
-  "BOT_TOKEN": "$bot_token",
-  "ADMIN_ID": "$admin_id"
+  "BOT_TOKEN": "$token",
+  "USER_ID": "$adminid",
+  "NAMA_STORE": "$namastore",
+  "PORT": "50123",
+  "DATA_QRIS": "$dataqris",
+  "MERCHANT_ID": "$merchantid",
+  "API_KEY": "$apikey",
+  "GROUP_CHAT_ID": "$chatid_group",
+  "SAWERIA_USERNAME": "$username_saweria",
+  "SAWERIA_EMAIL": "$saweria_email"
 }
 EOF
 
-echo -e "${CYAN}[5]${NC} Membuat file executable dan service systemd..."
+    NODE_PATH=$(which node)
+    if [ -z "$NODE_PATH" ]; then
+      echo -e "${RED}❌ Node.js tidak ditemukan. Pastikan Node.js sudah terinstall.${NC}"
+      exit 1
+    fi
+    echo -e "${GREEN}Node.js ditemukan di: $NODE_PATH${NC}"
 
-cat >/usr/bin/botregist <<EOF
+    # Buat autorun executable
+    cat >/usr/bin/sellvpn <<EOF
 #!/bin/bash
-cd $(pwd)
-node index.js
+cd /root/BotVPN4 || exit 1
+$NODE_PATH app.js
 EOF
-chmod +x /usr/bin/botregist
+    chmod +x /usr/bin/sellvpn
 
-cat >/etc/systemd/system/botregist.service <<EOF
+    # Buat systemd service
+    cat >/etc/systemd/system/sellvpn.service <<EOF
 [Unit]
-Description=Bot Telegram Registrasi VPS Service
+Description=App Bot sellvpn Service
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/node $(pwd)/index.js
-WorkingDirectory=$(pwd)
+ExecStart=$NODE_PATH /root/BotVPN4/app.js
+WorkingDirectory=/root/BotVPN4
 Restart=always
 RestartSec=3
 User=root
 Environment=NODE_ENV=production
-StandardOutput=syslog
-StandardError=syslog
+Environment=TZ=Asia/Jakarta
+StandardOutput=append:/var/log/sellvpn.log
+StandardError=append:/var/log/sellvpn-error.log
+LimitNOFILE=10000
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-systemctl daemon-reload
-systemctl enable botregist
-systemctl restart botregist
+    systemctl daemon-reload
+    systemctl enable sellvpn
+    systemctl restart sellvpn
+    service cron restart
 
-echo -e "${GREEN}✅ Bot Telegram berhasil dipasang dan dijalankan.${NC}"
-echo "Cek status dengan: systemctl status botregist"
+    echo -e "${GREEN}✅ BotVPN4 berhasil diinstal dan berjalan.${NC}"
+    echo -e "📡 Status Service: $(systemctl is-active sellvpn)"
+  }
 
-# -- Pilihan 5 (Hapus Bot Telegram) --
+  # Jalankan seluruh fungsi secara berurutan
+  hapus_bot_lama
+  pasang_package
+  setup_bot
+  setup_service
+fi
 
-elif [[ "$INSTALL_OPTION" == "5" ]]; then
+# ==========================
+# --- Hapus Bot Telegram ---
+# ==========================
+if [[ "$INSTALL_OPTION" == "5" ]]; then
   echo -e "$LINE"
   echo -e "${RED}🗑️ Menghapus Bot Telegram...${NC}"
   echo -e "$LINE"
 
-  systemctl stop botregist 2>/dev/null
-  systemctl disable botregist 2>/dev/null
-  rm -f /etc/systemd/system/botregist.service
-  rm -f /usr/bin/botregist
-  rm -rf bot-regist
+  echo -ne "${YELLOW}📍 Menghapus folder bot-regist jika ada...${NC}"
+  (rm -rf bot-regist) & loading_spinner
 
-  systemctl daemon-reload
+  echo -ne "${YELLOW}🧹 Menghapus proses PM2 bot Telegram...${NC}"
+  (
+    pm2 stop Bot-Register >/dev/null 2>&1
+    pm2 delete Bot-Register >/dev/null 2>&1
+    pm2 save
+  ) & loading_spinner
+
   echo -e "${GREEN}✅ Bot Telegram berhasil dihapus.${NC}"
-
-# -- Pilihan 6 (Install Bot SellVPN) --
-
-elif [[ "$INSTALL_OPTION" == "6" ]]; then
-  echo -e "$LINE"
-  echo -e "${BLUE}🤖 Instalasi Bot SellVPN...${NC}"
-  echo -e "$LINE"
-
-  hapus_bot_lama
-  pasang_package
-  setup_bot
-  server_app
 fi
-
-echo -e "$LINE"
-echo -e "${GREEN}✔️ Proses instalasi selesai.${NC}"
-echo -e "$LINE"
