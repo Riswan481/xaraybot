@@ -1,11 +1,12 @@
 #!/bin/bash
 
-BOT_DIR="$HOME/botregist"
-REPO_URL="https://github.com/Riswan481/botregist.git"
-BOT_NAME="botregist"
+# ==========================
+# --- Konfigurasi awal ---
+# ==========================
+REPO_URL="https://github.com/Riswan481/xaraybot.git"
+TEMP_DIR="/tmp/xaraybot-install"
+WHITELIST_URL="https://raw.githubusercontent.com/Riswan481/xaraybot/main/allowed_ips.txt"
 
-# URL list IP whitelist (misal disimpan di GitHub)
-WHITELIST_URL="https://raw.githubusercontent.com/Riswan481/botregist/main/allowed_ips.txt"
 
 # Ambil IP publik VPS
 MYIP=$(curl -sS ipv4.icanhazip.com)
