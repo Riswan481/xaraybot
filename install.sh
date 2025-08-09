@@ -40,15 +40,13 @@ loading_spinner() {
 # ==========================
 clear
 echo -e "${YELLOW}"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
 echo -e "  1) 🔐 Install Script Xray"
 echo -e "  2) 🤖 Install Bot Sellvpn"
 echo -e "${CYAN}  x) Keluar${NC}"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-
 read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/x): ${NC}")" INSTALL_OPTION
 
 if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
