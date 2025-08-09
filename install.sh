@@ -16,7 +16,7 @@ BLUE='\033[1;94m'
 CYAN='\033[1;96m'
 RED='\033[1;91m'
 NC='\033[0m'
-LINE="${CYAN}═══════════════════════════════════════════════════════════════${NC}"
+LINE="${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 # ==========================
 # --- Fungsi loading ---
@@ -40,27 +40,23 @@ loading_spinner() {
 # ==========================
 clear
 echo -e "${YELLOW}"
-echo "═══════════════════════════════════════════════════════════════"
-echo "🚀 INSTALLER SCRIPT XRAY & BOT TELEGRAM by RISWAN "
-echo "═══════════════════════════════════════════════════════════════"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo -e "${NC}"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
 echo -e "  1) 🔐 Install Script Xray"
-echo -e "  2) 🤖 Install Bot Telegram"
-echo -e "  3) 🗑️ Hapus Bot Telegram"
-echo -e "  4) 🤖 Install Bot Sellvpn"
+echo -e "  2) 🤖 Install Bot Sellvpn"
 echo -e "${CYAN}  x) Keluar${NC}"
-echo "═══════════════════════════════════════════════════════════════"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 
-read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/3/4/x): ${NC}")" INSTALL_OPTION
+read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/x): ${NC}")" INSTALL_OPTION
 
 if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
   echo -e "${RED}❌ Proses dibatalkan oleh user.${NC}"
   exit 0
 fi
 
-if ! [[ "$INSTALL_OPTION" =~ ^[1-4]$ ]]; then
+if ! [[ "$INSTALL_OPTION" =~ ^[1-2]$ ]]; then
   echo -e "${RED}❌ Pilihan tidak valid. Instalasi dibatalkan.${NC}"
   exit 1
 fi
@@ -133,42 +129,6 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
 fi
 
 if [[ "$INSTALL_OPTION" == "2" ]]; then
-  echo -e "$LINE"
-  echo -e "${BLUE}🤖 Instalasi Bot Telegram...${NC}"
-  echo -e "$LINE"
-
-  echo -e "${CYAN}[1]${NC} Mengupdate sistem dan install Node.js..."
-  apt update && apt install -y nodejs npm git unzip curl
-  sleep 1
-
-  echo -e "${CYAN}[2]${NC} Clone repo bot-regist..."
-  git clone https://github.com/Riswan481/bot-regist.git
-  cd bot-regist || { echo -e "${RED}❌ Gagal masuk ke folder bot-regist${NC}"; exit 1; }
-
-  echo -e "${CYAN}[3]${NC} Install dependency npm..."
-  npm install
-  npm install -g pm2
-
-  echo -e "${CYAN}[4]${NC} Menjalankan bot dengan PM2..."
-  pm2 start bot.js --name Bot-Register
-  pm2 save
-
-  echo -e "${GREEN}✅ Bot Telegram berhasil dijalankan!${NC}"
-  echo -e "${YELLOW}🔁 Jalankan ulang setelah reboot dengan: ${CYAN}pm2 resurrect${NC}"
-fi
-
-if [[ "$INSTALL_OPTION" == "3" ]]; then
-  echo -e "$LINE"
-  echo -e "${RED}🗑️ Menghapus Bot Telegram...${NC}"
-  echo -e "$LINE"
-
-  echo -e "${CYAN}[🔄] Menghapus bot dan folder terkait...${NC}"
-  pm2 delete Bot-Register 2>/dev/null
-  rm -rf bot-regist
-  echo -e "${GREEN}✅ Bot Telegram berhasil dihapus dari VPS.${NC}"
-fi
-
-if [[ "$INSTALL_OPTION" == "4" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi BotVPN4 (Bot Order VPN Otomatis)...${NC}"
   echo -e "$LINE"
@@ -346,10 +306,6 @@ echo -e "${GREEN}✅ Instalasi selesai!${NC}"
 if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "📂 ${CYAN}Xray command: add-vmess | add-vless | add-trojan | add-ss${NC}"
 elif [[ "$INSTALL_OPTION" == "2" ]]; then
-  echo -e "🤖 ${CYAN}Bot Telegram aktif dengan PM2.${NC}"
-elif [[ "$INSTALL_OPTION" == "3" ]]; then
-  echo -e "🗑️ ${CYAN}Bot Telegram telah dihapus.${NC}"
-elif [[ "$INSTALL_OPTION" == "4" ]]; then
   echo -e "🤖 ${CYAN}BotVPN4 aktif dan berjalan dengan systemd (sellvpn.service).${NC}"
 fi
 
