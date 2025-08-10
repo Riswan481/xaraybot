@@ -1,4 +1,4 @@
-# 🤖 SimpleBot - WhatsApp VPN Bot Installer
+🤖 SimpleBot - WhatsApp VPN Bot Installer
 
 SimpleBot adalah bot WhatsApp otomatis untuk membuat akun VPN (SSH, VMess, VLESS, Trojan, Shadowsocks) melalui perintah WhatsApp. Bot ini`.
 
