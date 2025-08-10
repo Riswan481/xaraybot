@@ -105,6 +105,11 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     cp "$TEMP_DIR/add-vless" /etc/xray/
     cp "$TEMP_DIR/add-trojan" /etc/xray/
     cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
+
+    # Copy script trial jika ada
+    cp "$TEMP_DIR/add-vmess-trial" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-vless-trial" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-trojan-trial" /etc/xray/ 2>/dev/null || true
   ) & loading_spinner
 
   echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
@@ -113,6 +118,10 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     chmod +x /etc/xray/add-vless
     chmod +x /etc/xray/add-trojan
     chmod +x /etc/xray/add-ss 2>/dev/null || true
+
+    chmod +x /etc/xray/add-vmess-trial 2>/dev/null || true
+    chmod +x /etc/xray/add-vless-trial 2>/dev/null || true
+    chmod +x /etc/xray/add-trojan-trial 2>/dev/null || true
   ) & loading_spinner
 
   echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
@@ -121,12 +130,12 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     ln -sf /etc/xray/add-vless /usr/bin/add-vless
     ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
     ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
-  ) & loading_spinner
 
-  # Tambahan: aktifkan permission eksekusi untuk script trial
-  chmod +x /etc/xray/add-vmess-trial
-  chmod +x /etc/xray/add-vless-trial
-  chmod +x /etc/xray/add-trojan-trial
+    # Symlink untuk script trial juga jika ada
+    ln -sf /etc/xray/add-vmess-trial /usr/bin/add-vmess-trial 2>/dev/null || true
+    ln -sf /etc/xray/add-vless-trial /usr/bin/add-vless-trial 2>/dev/null || true
+    ln -sf /etc/xray/add-trojan-trial /usr/bin/add-trojan-trial 2>/dev/null || true
+  ) & loading_spinner
 
   echo -e "${GREEN}✅ Instalasi Xray selesai.${NC}"
 fi
