@@ -123,6 +123,11 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
   ) & loading_spinner
 
+  # Tambahan: aktifkan permission eksekusi untuk script trial
+  chmod +x /etc/xray/add-vmess-trial
+  chmod +x /etc/xray/add-vless-trial
+  chmod +x /etc/xray/add-trojan-trial
+
   echo -e "${GREEN}✅ Instalasi Xray selesai.${NC}"
 fi
 
