@@ -1,16 +1,16 @@
 #!/bin/bash
 config_file="/etc/xray/config.json"
+user=$1
 
-echo "====================="
-echo "❌ HAPUS USER VLESS"
-echo "====================="
-read -p "Masukkan Username: " user
+if [[ -z $user ]]; then
+    echo "❌ Masukkan username!"
+    exit 1
+fi
 
 if grep -qw "$user" "$config_file"; then
-    sed -i "/^### $user /d" "$config_file"
-    sed -i "/\"email\": \"$user\"/d" "$config_file"
-    echo "✅ User $user berhasil dihapus dari VLESS!"
+    sed -i "/^### $user /,/^},{/d" $config_file
     systemctl restart xray
+    echo "✅ User VLESS $user berhasil dihapus!"
 else
-    echo "❌ User $user tidak ditemukan!"
+    echo "❌ User VLESS $user tidak ditemukan!"
 fi

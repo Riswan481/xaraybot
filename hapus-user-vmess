@@ -1,19 +1,17 @@
 #!/bin/bash
 config_file="/etc/xray/config.json"
+user=$1
 
-echo "====================="
-echo "❌ HAPUS USER VMESS"
-echo "====================="
-read -p "Masukkan Username: " user
+if [[ -z $user ]]; then
+    echo "❌ Masukkan username!"
+    exit 1
+fi
 
-# Cari user berdasarkan ### atau email
 if grep -qw "$user" "$config_file"; then
-    # Hapus tanda komentar
-    sed -i "/^### $user /d" "$config_file"
-    # Hapus block email user
-    sed -i "/\"email\": \"$user\"/d" "$config_file"
-    echo "✅ User $user berhasil dihapus dari VMESS!"
+    # hapus user dari config
+    sed -i "/^### $user /,/^},{/d" $config_file
     systemctl restart xray
+    echo "✅ User $user berhasil dihapus!"
 else
     echo "❌ User $user tidak ditemukan!"
 fi
