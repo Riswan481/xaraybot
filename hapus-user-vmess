@@ -1,0 +1,23 @@
+#!/bin/bash
+# Hapus user VMess berdasarkan username
+
+config_file="/etc/xray/config.json"
+service_name="xray"
+
+echo -e "====================="
+echo -e "❌ HAPUS USER VMESS"
+echo -e "====================="
+read -p "👥 Masukkan username" user
+
+# Cek apakah user ada
+if ! grep -q "^### $user " "$config_file"; then
+    echo "❌ User $user tidak ditemukan!"
+    exit 1
+fi
+
+# Hapus user dari config.json
+sed -i "/^### $user /,/^},{/d" "$config_file"
+
+# Restart Xray biar aktif
+systemctl restart $service_name
+echo -e "✅ User $user berhasil dihapus!"

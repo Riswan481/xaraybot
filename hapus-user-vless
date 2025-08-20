@@ -1,0 +1,20 @@
+#!/bin/bash
+# Hapus user VLESS berdasarkan username
+
+config_file="/etc/xray/config.json"
+service_name="xray"
+
+echo -e "====================="
+echo -e "❌ HAPUS USER VLESS"
+echo -e "====================="
+read -p "✅ Masukkan username " user
+
+if ! grep -q "^### $user " "$config_file"; then
+    echo "❌ User $user tidak ditemukan!"
+    exit 1
+fi
+
+sed -i "/^### $user /,/^},{/d" "$config_file"
+
+systemctl restart $service_name
+echo -e "✅ User $user berhasil dihapus!"
