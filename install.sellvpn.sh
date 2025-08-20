@@ -168,9 +168,7 @@ echo -ne "${YELLOW}📂 Menyalin file cek ke /etc/xray...${NC}"
   cp "$TEMP_DIR/cek-ss" /etc/xray/ 2>/dev/null || true
 ) & loading_spinner
 
-# ==========================
 # --- Memberikan Izin Eksekusi pada File Cek ---
-# ==========================
 echo -ne "${YELLOW}🔐 Memberikan izin eksekusi pada file cek...${NC}"
 (
   chmod +x /etc/xray/cek-ssh
@@ -180,9 +178,6 @@ echo -ne "${YELLOW}🔐 Memberikan izin eksekusi pada file cek...${NC}"
   chmod +x /etc/xray/cek-ss
 ) & loading_spinner
 
-# ==========================
-# --- Daftar Command Cek ---
-# ==========================
 echo -e "${GREEN}✅ Semua file cek disalin dan diberikan izin eksekusi.${NC}"
 echo -e "$LINE"
 echo -e "${CYAN}📌 Daftar command cek yang tersedia:${NC}"
@@ -191,6 +186,35 @@ echo -e "  🔹 cek-vmess"
 echo -e "  🔹 cek-vless"
 echo -e "  🔹 cek-trojan"
 echo -e "  🔹 cek-ss"
+echo -e "$LINE"
+
+# ==========================
+# --- Menyalin File Hapus User ---
+# ==========================
+echo -ne "${YELLOW}📂 Menyalin file hapus-user ke /etc/xray...${NC}"
+(
+  cp "$TEMP_DIR/hapus-user-ssh" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/hapus-user-vmess" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/hapus-user-vless" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/hapus-user-trojan" /etc/xray/ 2>/dev/null || true
+) & loading_spinner
+
+# --- Memberikan Izin Eksekusi pada File Hapus User ---
+echo -ne "${YELLOW}🔐 Memberikan izin eksekusi pada file hapus-user...${NC}"
+(
+  chmod +x /etc/xray/hapus-user-ssh
+  chmod +x /etc/xray/hapus-user-vmess
+  chmod +x /etc/xray/hapus-user-vless
+  chmod +x /etc/xray/hapus-user-trojan
+) & loading_spinner
+
+echo -e "${GREEN}✅ Semua file hapus-user disalin dan diberikan izin eksekusi.${NC}"
+echo -e "$LINE"
+echo -e "${CYAN}📌 Daftar command hapus-user yang tersedia:${NC}"
+echo -e "  🔹 hapus-user-ssh"
+echo -e "  🔹 hapus-user-vmess"
+echo -e "  🔹 hapus-user-vless"
+echo -e "  🔹 hapus-user-trojan"
 echo -e "$LINE"
 
 # ==========================
