@@ -1,0 +1,16 @@
+#!/bin/bash
+# Cek semua user VMess di Xray
+
+config_file="/etc/xray/config.json"
+
+echo -e "============================"
+echo -e "   👤 LIST USER VMESS"
+echo -e "============================"
+
+grep -E '^### ' "$config_file" | while read -r line; do
+    user=$(echo "$line" | awk '{print $2}')
+    exp=$(echo "$line" | awk '{print $3}')
+    echo -e "👤 User: $user"
+    echo -e "📅 Expired: $exp"
+    echo -e "============================"
+done

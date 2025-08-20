@@ -1,0 +1,13 @@
+#!/bin/bash
+# Script Cek Semua User SSH
+
+echo -e "============================"
+echo -e "           👤 LIST USER SSH"
+echo -e "============================"
+
+while read user; do
+    exp=$(chage -l $user | grep "Account expires" | awk -F": " '{print $2}')
+    echo -e "👤 User     : $user"
+    echo -e "📅 Expired  : $exp"
+    echo -e "============================"
+done < <(awk -F: '$3 >= 1000 {print $1}' /etc/passwd | grep -v nobody)
