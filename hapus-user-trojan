@@ -1,20 +1,16 @@
 #!/bin/bash
-# Hapus user Trojan berdasarkan username
-
 config_file="/etc/xray/config.json"
-service_name="xray"
 
-echo -e "====================="
-echo -e "❌ HAPUS USER TROJAN"
-echo -e "====================="
-read -p "👥 Masukkan username " user
+echo "====================="
+echo "❌ HAPUS USER TROJAN"
+echo "====================="
+read -p "Masukkan Username: " user
 
-if ! grep -q "^### $user " "$config_file"; then
+if grep -qw "$user" "$config_file"; then
+    sed -i "/^### $user /d" "$config_file"
+    sed -i "/\"password\": \"$user\"/d" "$config_file"
+    echo "✅ User $user berhasil dihapus dari TROJAN!"
+    systemctl restart xray
+else
     echo "❌ User $user tidak ditemukan!"
-    exit 1
 fi
-
-sed -i "/^### $user /,/^},{/d" "$config_file"
-
-systemctl restart $service_name
-echo -e "✅ User $user berhasil dihapus!"

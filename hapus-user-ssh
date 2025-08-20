@@ -1,14 +1,13 @@
 #!/bin/bash
-# Hapus user SSH
 
-echo -e "====================="
-echo -e "❌ HAPUS USER SSH"
-echo -e "====================="
-read -p "👥 Masukkan username " user
+echo "====================="
+echo "❌ HAPUS USER SSH"
+echo "====================="
+read -p "Masukkan Username: " user
 
 if id "$user" &>/dev/null; then
-    userdel -r $user
-    echo -e "✅ User $user berhasil dihapus!"
+    userdel -r "$user" &>/dev/null
+    echo "✅ User $user berhasil dihapus dari SSH!"
 else
     echo "❌ User $user tidak ditemukan!"
 fi
