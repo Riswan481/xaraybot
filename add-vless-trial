@@ -1,0 +1,50 @@
+#!/bin/bash
+# Script Add VLESS Trial (Expired 30 Menit)
+
+user=trial-`echo $RANDOM | head -c4`
+minutes=30
+Quota=0
+iplimit=0
+bug="isi.bug.com"   # default bug (bisa diubah manual)
+uuid=$(cat /proc/sys/kernel/random/uuid)
+exp=$(date -d "$minutes minutes" +"%Y-%m-%d %H:%M:%S")
+domain=$(cat /etc/xray/domain)
+
+# Pastikan folder ada
+[ ! -e /etc/vless ] && mkdir -p /etc/vless
+
+# Tambahkan ke config Xray
+sed -i '/#vless$/a\#& '"$user $exp"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
+sed -i '/#vlessgrpc$/a\#&& '"$user $exp"'\
+},{"id": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
+
+# Simpan ke database
+echo "### ${user} ${exp} ${uuid} ${Quota} ${iplimit}" >>/etc/vless/.vless.db
+
+# Generate Links
+vless_tls_ws_link="vless://${uuid}@${domain}:443?encryption=none&security=tls&type=ws&path=/vless&host=${bug}&sni=${domain}#${user}-VlessWS-TLS"
+vless_none_tls_ws_link="vless://${uuid}@${bug}:80?encryption=none&security=none&type=ws&path=/vless&host=${domain}#${user}-VlessWS-NonTLS"
+vless_grpc_link="vless://${uuid}@${domain}:443?encryption=none&security=tls&type=grpc&serviceName=vless-grpc&sni=${domain}#${user}-VlessGRPC"
+
+# Restart layanan
+systemctl restart xray > /dev/null 2>&1
+systemctl restart nginx > /dev/null 2>&1
+service cron restart > /dev/null 2>&1
+
+# Auto hapus setelah 30 menit
+echo "sed -i '/${user} ${exp}/d' /etc/vless/.vless.db; sed -i '/\"email\": \"${user}\"/d' /etc/xray/config.json; systemctl restart xray" | at now +30 minutes
+
+# Output
+clear
+echo "SUCCESS - Trial VLESS Created"
+echo "==============================="
+echo "User       : $user"
+echo "Domain     : $domain"
+echo "UUID       : $uuid"
+echo "Expired    : $exp (30 menit)"
+echo "==============================="
+echo "Link VLESS WS TLS     : $vless_tls_ws_link"
+echo "Link VLESS WS NonTLS  : $vless_none_tls_ws_link"
+echo "Link VLESS gRPC       : $vless_grpc_link"
+echo "==============================="

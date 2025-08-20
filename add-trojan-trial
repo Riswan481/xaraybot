@@ -1,0 +1,50 @@
+#!/bin/bash
+# Script Add Trojan Trial (Expired 30 Menit)
+
+user=trial-`echo $RANDOM | head -c4`
+minutes=30
+Quota=0
+iplimit=0
+bug="isi.bug.com"   # default bug (bisa disesuaikan)
+uuid=$(cat /proc/sys/kernel/random/uuid)
+exp=$(date -d "$minutes minutes" +"%Y-%m-%d %H:%M:%S")
+domain=$(cat /etc/xray/domain)
+
+# Pastikan folder ada
+[ ! -e /etc/trojan ] && mkdir -p /etc/trojan
+
+# Tambah ke config Xray
+sed -i '/#trojanws$/a\#!'"$user $exp"'\
+},{"password": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
+sed -i '/#trojangrpc$/a\#!# '"$user $exp"'\
+},{"password": "'""$uuid""'","email": "'""$user""'"' /etc/xray/config.json
+
+# Simpan ke database
+echo "### ${user} ${exp} ${uuid} ${Quota} ${iplimit}" >>/etc/trojan/.trojan.db
+
+# Buat link
+trojanlink_tls="trojan://${uuid}@${domain}:443?path=%2Ftrojan-ws&security=tls&host=${domain}&type=ws&sni=${bug}#${user}-TrojanWS-TLS"
+trojanlink_nontls="trojan://${uuid}@${bug}:80?path=%2Ftrojan-ws&security=none&host=${domain}&type=ws#${user}-TrojanWS-NonTLS"
+trojanlink_grpc="trojan://${uuid}@${bug}:443?mode=gun&security=tls&type=grpc&serviceName=trojan-grpc&sni=${domain}#${user}-TrojanGRPC"
+
+# Restart service
+systemctl restart xray > /dev/null 2>&1
+systemctl restart nginx > /dev/null 2>&1
+service cron restart > /dev/null 2>&1
+
+# Auto hapus setelah 30 menit
+echo "sed -i '/${user} ${exp}/d' /etc/trojan/.trojan.db; sed -i '/\"email\": \"${user}\"/d' /etc/xray/config.json; systemctl restart xray" | at now +30 minutes
+
+# Output
+clear
+echo "SUCCESS - Trial Trojan Created"
+echo "==============================="
+echo "User       : $user"
+echo "Domain     : $domain"
+echo "Password   : $uuid"
+echo "Expired    : $exp (30 menit)"
+echo "==============================="
+echo "Link Trojan WS TLS    : $trojanlink_tls"
+echo "Link Trojan WS NonTLS : $trojanlink_nontls"
+echo "Link Trojan gRPC      : $trojanlink_grpc"
+echo "==============================="

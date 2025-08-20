@@ -1,0 +1,104 @@
+#!/bin/bash
+# Script Add Vmess Trial (expired 30 menit)
+
+user=trial-`echo $RANDOM | head -c4`
+days=0
+minutes=30
+Quota=0
+iplimit=0
+bug="isi.bug.com"   # bisa diganti default bug
+uuid=$(cat /proc/sys/kernel/random/uuid)
+exp=$(date -d "$minutes minutes" +"%Y-%m-%d %H:%M:%S")
+
+source /var/lib/kyt/ipvps.conf
+if [[ "$IP" = "" ]]; then
+    domain=$(cat /etc/xray/domain)
+else
+    domain=$IP
+fi
+
+# Tambahkan ke config xray
+sed -i '/#vmess$/a\### '"$user $exp"'\
+},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /etc/xray/config.json
+sed -i '/#vmessgrpc$/a\## '"$user $exp"'\
+},{"id": "'""$uuid""'","alterId": '"0"',"email": "'""$user""'"' /etc/xray/config.json
+
+# Buat database user
+echo "### ${user} ${exp} ${uuid} ${Quota} ${iplimit}" >>/etc/vmess/.vmess.db
+
+# Generate config links
+asu=$(cat<<EOF
+{
+  "v": "2",
+  "ps": "${user}",
+  "add": "${bug}",
+  "port": "443",
+  "id": "${uuid}",
+  "aid": "0",
+  "net": "ws",
+  "path": "/vmess",
+  "type": "none",
+  "host": "${domain}",
+  "tls": "tls"
+}
+EOF
+)
+vmesslink1="vmess://$(echo $asu | base64 -w 0)"
+
+ask=$(cat<<EOF
+{
+  "v": "2",
+  "ps": "${user}",
+  "add": "${bug}",
+  "port": "80",
+  "id": "${uuid}",
+  "aid": "0",
+  "net": "ws",
+  "path": "/vmess",
+  "type": "none",
+  "host": "${domain}",
+  "tls": "none"
+}
+EOF
+)
+vmesslink2="vmess://$(echo $ask | base64 -w 0)"
+
+grpc=$(cat<<EOF
+{
+  "v": "2",
+  "ps": "${user}",
+  "add": "${bug}",
+  "port": "443",
+  "id": "${uuid}",
+  "aid": "0",
+  "net": "grpc",
+  "path": "vmess-grpc",
+  "type": "none",
+  "host": "${domain}",
+  "tls": "tls"
+}
+EOF
+)
+vmesslink3="vmess://$(echo $grpc | base64 -w 0)"
+
+# Restart layanan
+systemctl restart xray > /dev/null 2>&1
+systemctl restart nginx > /dev/null 2>&1
+service cron restart > /dev/null 2>&1
+
+# Jadwalkan auto delete setelah 30 menit
+echo "gawk -i inplace '!/${user}/' /etc/xray/config.json; systemctl restart xray" | at now +30 minutes
+
+# Output
+clear
+echo "SUCCESS - Trial VMess Created"
+echo "==============================="
+echo "User       : $user"
+echo "Domain     : $domain"
+echo "UUID       : $uuid"
+echo "Expired    : $exp (30 menit)"
+echo "==============================="
+echo "Link TLS   : $vmesslink1"
+echo "Link NTLS  : $vmesslink2"
+echo "Link GRPC  : $vmesslink3"
+echo "==============================="
