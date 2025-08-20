@@ -80,12 +80,12 @@ fi
 # ==========================
 # --- Proses Instalasi ---
 # ==========================
-
 if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🚀 Memulai instalasi script Xray + SSH...${NC}"
   echo -e "$LINE"
 
+  # Update dan install dependencies
   echo -ne "${YELLOW}📦 Update sistem dan install curl & git...${NC}"
   (
     apt update -y -o Acquire::ForceIPv4=true && \
@@ -93,9 +93,11 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     apt install -y curl git
   ) & loading_spinner
 
+  # Clone repository
   echo -ne "${YELLOW}📥 Meng-clone repo: $REPO_URL ...${NC}"
   (git clone "$REPO_URL" "$TEMP_DIR") & loading_spinner
 
+  # Membuat folder dan menyalin file
   echo -ne "${YELLOW}📁 Membuat folder /etc/xray...${NC}"
   (mkdir -p /etc/xray) & loading_spinner
 
@@ -106,13 +108,13 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     cp "$TEMP_DIR/add-trojan" /etc/xray/
     cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
     cp "$TEMP_DIR/add-ssh" /etc/xray/ 2>/dev/null || true
-    # Script trial
     cp "$TEMP_DIR/add-vmess-trial" /etc/xray/ 2>/dev/null || true
     cp "$TEMP_DIR/add-vless-trial" /etc/xray/ 2>/dev/null || true
     cp "$TEMP_DIR/add-trojan-trial" /etc/xray/ 2>/dev/null || true
     cp "$TEMP_DIR/add-ssh-trial" /etc/xray/ 2>/dev/null || true
   ) & loading_spinner
 
+  # Memberikan izin eksekusi
   echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
   (
     chmod +x /etc/xray/add-vmess
@@ -126,6 +128,7 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     chmod +x /etc/xray/add-ssh-trial 2>/dev/null || true
   ) & loading_spinner
 
+  # Membuat symlink ke /usr/bin
   echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
   (
     ln -sf /etc/xray/add-vmess /usr/bin/add-vmess
@@ -151,8 +154,51 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "  🔹 add-vless-trial"
   echo -e "  🔹 add-trojan-trial"
   echo -e "  🔹 add-ssh-trial"
-  echo -e "$LINE"
 fi
+
+# ==========================
+# --- Menyalin File Cek ---
+# ==========================
+echo -ne "${YELLOW}📂 Menyalin file cek ke /etc/xray...${NC}"
+(
+  cp "$TEMP_DIR/cek-ssh" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/cek-vmess" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/cek-vless" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/cek-trojan" /etc/xray/ 2>/dev/null || true
+  cp "$TEMP_DIR/cek-ss" /etc/xray/ 2>/dev/null || true
+) & loading_spinner
+
+# ==========================
+# --- Memberikan Izin Eksekusi pada File Cek ---
+# ==========================
+echo -ne "${YELLOW}🔐 Memberikan izin eksekusi pada file cek...${NC}"
+(
+  chmod +x /etc/xray/cek-ssh
+  chmod +x /etc/xray/cek-vmess
+  chmod +x /etc/xray/cek-vless
+  chmod +x /etc/xray/cek-trojan
+  chmod +x /etc/xray/cek-ss
+) & loading_spinner
+
+# ==========================
+# --- Daftar Command Cek ---
+# ==========================
+echo -e "${GREEN}✅ Semua file cek disalin dan diberikan izin eksekusi.${NC}"
+echo -e "$LINE"
+echo -e "${CYAN}📌 Daftar command cek yang tersedia:${NC}"
+echo -e "  🔹 cek-ssh"
+echo -e "  🔹 cek-vmess"
+echo -e "  🔹 cek-vless"
+echo -e "  🔹 cek-trojan"
+echo -e "  🔹 cek-ss"
+echo -e "$LINE"
+
+# ==========================
+# --- Selesai ---
+# ==========================
+echo -e "${GREEN}✅ Semua proses selesai!${NC}"
+echo -e "${CYAN}Terima kasih telah menggunakan script ini. Selamat mencoba!${NC}"
+echo -e "$LINE"
 
 # ==========================
 # --- Opsi Install BotVPN4 ---
