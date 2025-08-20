@@ -42,7 +42,7 @@ clear
 echo -e "${YELLOW}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
-echo -e "  1) 🔐 Install Script Xray"
+echo -e "  1) 🔐 Install Script Xray + SSH"
 echo -e "  2) 🤖 Install Bot Sellvpn"
 echo -e "${CYAN}  x) Keluar${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -83,7 +83,7 @@ fi
 
 if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "$LINE"
-  echo -e "${BLUE}🚀 Memulai instalasi script Xray...${NC}"
+  echo -e "${BLUE}🚀 Memulai instalasi script Xray + SSH...${NC}"
   echo -e "$LINE"
 
   echo -ne "${YELLOW}📦 Update sistem dan install curl & git...${NC}"
@@ -105,6 +105,12 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     cp "$TEMP_DIR/add-vless" /etc/xray/
     cp "$TEMP_DIR/add-trojan" /etc/xray/
     cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-ssh" /etc/xray/ 2>/dev/null || true
+    # Script trial
+    cp "$TEMP_DIR/add-vmess-trial" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-vless-trial" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-trojan-trial" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/add-ssh-trial" /etc/xray/ 2>/dev/null || true
   ) & loading_spinner
 
   echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
@@ -113,6 +119,11 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     chmod +x /etc/xray/add-vless
     chmod +x /etc/xray/add-trojan
     chmod +x /etc/xray/add-ss 2>/dev/null || true
+    chmod +x /etc/xray/add-ssh 2>/dev/null || true
+    chmod +x /etc/xray/add-vmess-trial 2>/dev/null || true
+    chmod +x /etc/xray/add-vless-trial 2>/dev/null || true
+    chmod +x /etc/xray/add-trojan-trial 2>/dev/null || true
+    chmod +x /etc/xray/add-ssh-trial 2>/dev/null || true
   ) & loading_spinner
 
   echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
@@ -121,11 +132,31 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
     ln -sf /etc/xray/add-vless /usr/bin/add-vless
     ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
     ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
+    ln -sf /etc/xray/add-ssh /usr/bin/add-ssh 2>/dev/null || true
+    ln -sf /etc/xray/add-vmess-trial /usr/bin/add-vmess-trial 2>/dev/null || true
+    ln -sf /etc/xray/add-vless-trial /usr/bin/add-vless-trial 2>/dev/null || true
+    ln -sf /etc/xray/add-trojan-trial /usr/bin/add-trojan-trial 2>/dev/null || true
+    ln -sf /etc/xray/add-ssh-trial /usr/bin/add-ssh-trial 2>/dev/null || true
   ) & loading_spinner
 
-  echo -e "${GREEN}✅ Instalasi Xray selesai.${NC}"
+  echo -e "${GREEN}✅ Instalasi Xray + SSH selesai.${NC}"
+  echo -e "$LINE"
+  echo -e "${CYAN}📌 Daftar command yang tersedia:${NC}"
+  echo -e "  🔹 add-vmess"
+  echo -e "  🔹 add-vless"
+  echo -e "  🔹 add-trojan"
+  echo -e "  🔹 add-ss"
+  echo -e "  🔹 add-ssh"
+  echo -e "  🔹 add-vmess-trial"
+  echo -e "  🔹 add-vless-trial"
+  echo -e "  🔹 add-trojan-trial"
+  echo -e "  🔹 add-ssh-trial"
+  echo -e "$LINE"
 fi
 
+# ==========================
+# --- Opsi Install BotVPN4 ---
+# ==========================
 if [[ "$INSTALL_OPTION" == "2" ]]; then
   echo -e "$LINE"
   echo -e "${BLUE}🤖 Instalasi BotVPN4 (Bot Order VPN Otomatis)...${NC}"
