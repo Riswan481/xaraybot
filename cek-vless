@@ -3,14 +3,14 @@
 
 config_file="/etc/xray/config.json"
 
-echo -e "============================"
-echo -e "       👤 LIST USER VLESS"
-echo -e "============================"
+echo -e "======================="
+echo -e "    👤 LIST USER VLESS"
+echo -e "======================="
 
 grep -E '^#### ' "$config_file" | while read -r line; do
     user=$(echo "$line" | awk '{print $2}')
     exp=$(echo "$line" | awk '{print $3}')
     echo -e "👤 User     : $user"
     echo -e "📅 Expired  : $exp"
-    echo -e "============================"
+    echo -e "======================="
 done
