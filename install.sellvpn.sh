@@ -78,7 +78,7 @@ else
 fi
 
 # ==========================
-# --- Proses Instalasi ---
+# --- Proses Instalasi Xray ---
 # ==========================
 if [[ "$INSTALL_OPTION" == "1" ]]; then
   echo -e "$LINE"
@@ -103,206 +103,102 @@ if [[ "$INSTALL_OPTION" == "1" ]]; then
 
   echo -ne "${YELLOW}📂 Menyalin file script ke /etc/xray...${NC}"
   (
-    cp "$TEMP_DIR/add-vmess" /etc/xray/
-    cp "$TEMP_DIR/add-vless" /etc/xray/
-    cp "$TEMP_DIR/add-trojan" /etc/xray/
-    cp "$TEMP_DIR/add-ss" /etc/xray/ 2>/dev/null || true
-    cp "$TEMP_DIR/add-ssh" /etc/xray/ 2>/dev/null || true
-    cp "$TEMP_DIR/add-vmess-trial" /etc/xray/ 2>/dev/null || true
-    cp "$TEMP_DIR/add-vless-trial" /etc/xray/ 2>/dev/null || true
-    cp "$TEMP_DIR/add-trojan-trial" /etc/xray/ 2>/dev/null || true
-    cp "$TEMP_DIR/add-ssh-trial" /etc/xray/ 2>/dev/null || true
+    cp "$TEMP_DIR/"add-* /etc/xray/ 2>/dev/null || true
   ) & loading_spinner
 
   # Memberikan izin eksekusi
   echo -ne "${YELLOW}🔐 Memberikan izin eksekusi...${NC}"
-  (
-    chmod +x /etc/xray/add-vmess
-    chmod +x /etc/xray/add-vless
-    chmod +x /etc/xray/add-trojan
-    chmod +x /etc/xray/add-ss 2>/dev/null || true
-    chmod +x /etc/xray/add-ssh 2>/dev/null || true
-    chmod +x /etc/xray/add-vmess-trial 2>/dev/null || true
-    chmod +x /etc/xray/add-vless-trial 2>/dev/null || true
-    chmod +x /etc/xray/add-trojan-trial 2>/dev/null || true
-    chmod +x /etc/xray/add-ssh-trial 2>/dev/null || true
-  ) & loading_spinner
+  (chmod +x /etc/xray/add-* 2>/dev/null || true) & loading_spinner
 
   # Membuat symlink ke /usr/bin
   echo -ne "${YELLOW}🔗 Membuat symlink ke /usr/bin...${NC}"
   (
-    ln -sf /etc/xray/add-vmess /usr/bin/add-vmess
-    ln -sf /etc/xray/add-vless /usr/bin/add-vless
-    ln -sf /etc/xray/add-trojan /usr/bin/add-trojan
-    ln -sf /etc/xray/add-ss /usr/bin/add-ss 2>/dev/null || true
-    ln -sf /etc/xray/add-ssh /usr/bin/add-ssh 2>/dev/null || true
-    ln -sf /etc/xray/add-vmess-trial /usr/bin/add-vmess-trial 2>/dev/null || true
-    ln -sf /etc/xray/add-vless-trial /usr/bin/add-vless-trial 2>/dev/null || true
-    ln -sf /etc/xray/add-trojan-trial /usr/bin/add-trojan-trial 2>/dev/null || true
-    ln -sf /etc/xray/add-ssh-trial /usr/bin/add-ssh-trial 2>/dev/null || true
+    for f in /etc/xray/add-*; do
+      ln -sf "$f" /usr/bin/$(basename "$f")
+    done
   ) & loading_spinner
 
   echo -e "${GREEN}✅ Instalasi Xray + SSH selesai.${NC}"
   echo -e "$LINE"
-  echo -e "${CYAN}📌 Daftar command yang tersedia:${NC}"
-  echo -e "  🔹 add-vmess"
-  echo -e "  🔹 add-vless"
-  echo -e "  🔹 add-trojan"
-  echo -e "  🔹 add-ss"
-  echo -e "  🔹 add-ssh"
-  echo -e "  🔹 add-vmess-trial"
-  echo -e "  🔹 add-vless-trial"
-  echo -e "  🔹 add-trojan-trial"
-  echo -e "  🔹 add-ssh-trial"
 fi
 
 # ==========================
-# --- Menyalin File Cek ---
-# ==========================
-echo -ne "${YELLOW}📂 Menyalin file cek ke /etc/xray...${NC}"
-(
-  cp "$TEMP_DIR/cek-ssh" /etc/xray/ 2>/dev/null || true
-  cp "$TEMP_DIR/cek-vmess" /etc/xray/ 2>/dev/null || true
-  cp "$TEMP_DIR/cek-vless" /etc/xray/ 2>/dev/null || true
-  cp "$TEMP_DIR/cek-trojan" /etc/xray/ 2>/dev/null || true
-  cp "$TEMP_DIR/cek-ss" /etc/xray/ 2>/dev/null || true
-) & loading_spinner
-
-# ==========================
-# --- Memberikan Izin Eksekusi pada File Cek ---
-# ==========================
-echo -ne "${YELLOW}🔐 Memberikan izin eksekusi pada file cek...${NC}"
-(
-  chmod +x /etc/xray/cek-ssh
-  chmod +x /etc/xray/cek-vmess
-  chmod +x /etc/xray/cek-vless
-  chmod +x /etc/xray/cek-trojan
-  chmod +x /etc/xray/cek-ss
-) & loading_spinner
-
-# ==========================
-# --- Daftar Command Cek ---
-# ==========================
-echo -e "${GREEN}✅ Semua file cek disalin dan diberikan izin eksekusi.${NC}"
-echo -e "$LINE"
-echo -e "${CYAN}📌 Daftar command cek yang tersedia:${NC}"
-echo -e "  🔹 cek-ssh"
-echo -e "  🔹 cek-vmess"
-echo -e "  🔹 cek-vless"
-echo -e "  🔹 cek-trojan"
-echo -e "  🔹 cek-ss"
-echo -e "$LINE"
-
-# ==========================
-# --- Selesai ---
-# ==========================
-echo -e "${GREEN}✅ Semua proses selesai!${NC}"
-echo -e "${CYAN}Terima kasih telah menggunakan script ini. Selamat mencoba!${NC}"
-echo -e "$LINE"
-
-# ==========================
-# --- Opsi Install BotVPN4 ---
+# --- Bagian Install Bot Sellvpn (versi baru) ---
 # ==========================
 if [[ "$INSTALL_OPTION" == "2" ]]; then
-  echo -e "$LINE"
-  echo -e "${BLUE}🤖 Instalasi BotVPN4 (Bot Order VPN Otomatis)...${NC}"
-  echo -e "$LINE"
+  # Colors
+  green="\e[38;5;82m"
+  red="\e[38;5;196m"
+  neutral="\e[0m"
+  orange="\e[38;5;130m"
+  blue="\e[38;5;39m"
+  yellow="\e[38;5;226m"
+  purple="\e[38;5;141m"
+  bold_white="\e[1;37m"
+  reset="\e[0m"
+  pink="\e[38;5;205m"
 
-  # Fungsi hapus bot lama
   hapus_bot_lama() {
-    echo -e "${YELLOW}Menghapus bot lama jika ada...${NC}"
-    systemctl stop sellvpn.service 2>/dev/null
-    systemctl disable sellvpn.service 2>/dev/null
-    rm -f /etc/systemd/system/sellvpn.service
-    rm -f /usr/bin/sellvpn /usr/bin/server_sellvpn /etc/cron.d/server_sellvpn
-    rm -rf /root/BotVPN4
+      echo -e "${orange}Menghapus bot lama...${neutral}"
+      systemctl stop sellvpn.service 2>/dev/null
+      systemctl disable sellvpn.service 2>/dev/null
+      rm -f /etc/systemd/system/sellvpn.service
+      rm -f /usr/bin/sellvpn /usr/bin/server_sellvpn /etc/cron.d/server_sellvpn
+      rm -rf /root/BotVPN4
 
-    if command -v pm2 &> /dev/null; then
-        pm2 delete sellvpn &> /dev/null
-        pm2 save &> /dev/null
-    fi
+      if command -v pm2 &> /dev/null; then
+          pm2 delete sellvpn &> /dev/null
+          pm2 save &> /dev/null
+      fi
 
-    systemctl daemon-reload
-    echo -e "${GREEN}Bot lama berhasil dihapus.${NC}"
+      systemctl daemon-reload
+      echo -e "${green}Bot lama berhasil dihapus.${neutral}"
   }
 
-  # Fungsi install package dan dependencies
   pasang_package() {
-    echo -e "${CYAN}Memulai pengecekan dan instalasi dependensi...${NC}"
-
-    # Install Node.js v20 (stabil untuk Debian 10+/Ubuntu 20+)
-    if ! command -v node >/dev/null 2>&1 || ! node -v | grep -q 'v20'; then
-        curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-        apt-get install -y nodejs
-    fi
-
-    # Downgrade npm ke versi 10 agar kompatibel
-    npm install -g npm@10
-
-    # Install dependencies APT
-    apt update
-    apt install -y build-essential libcairo2-dev libpango1.0-dev \
-        libjpeg-dev libgif-dev librsvg2-dev pkg-config libpixman-1-dev git curl cron
+      echo -e "${blue}Memulai pengecekan dan instalasi dependensi...${reset}"
+      if ! command -v node >/dev/null 2>&1 || ! node -v | grep -q 'v20'; then
+          curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+          apt-get install -y nodejs
+      fi
+      npm install -g npm@10
+      apt update
+      apt install -y build-essential libcairo2-dev libpango1.0-dev \
+          libjpeg-dev libgif-dev librsvg2-dev pkg-config libpixman-1-dev git curl cron
   }
 
-  # Fungsi setup bot
   setup_bot() {
-    timedatectl set-timezone Asia/Jakarta
-
-    # Clone Bot
-    if [ ! -d /root/BotVPN4 ]; then
-        git clone https://github.com/script-vpn-premium/BotVPN4.git /root/BotVPN4
-    fi
-
-    # Install dependencies
-    cd /root/BotVPN4 || exit
-    npm install sqlite3 express crypto telegraf axios dotenv canvas node-fetch form-data
-    npm rebuild canvas
-    rm -rf node_modules
-    npm install
-    npm uninstall node-fetch
-    npm install node-fetch@2
-    chmod +x /root/BotVPN4/*
+      timedatectl set-timezone Asia/Jakarta
+      if [ ! -d /root/BotVPN4 ]; then
+          git clone https://github.com/script-vpn-premium/BotVPN4.git /root/BotVPN4
+      fi
+      cd /root/BotVPN4
+      npm install sqlite3 express crypto telegraf axios dotenv canvas node-fetch form-data
+      npm rebuild canvas
+      rm -rf node_modules
+      npm install
+      npm uninstall node-fetch
+      npm install node-fetch@2
+      chmod +x /root/BotVPN4/*
   }
 
-  # Fungsi jalankan konfigurasi dan input user
   server_app() {
-    clear
-    echo -e "${YELLOW}────────────────────────────────────────────${NC}"
-    echo -e "${CYAN}🎉 Selamat Datang di Bot Order VPN Otomatis 🎉${NC}"
-    echo -e "${GREEN}🔐 Layanan VPN Premium • Cepat • Mudah • Aman${NC}"
-    echo -e "${BLUE}🤖 Powered by RISWAN - Bot Telegram Modifikasi${NC}"
-    echo -e "${YELLOW}────────────────────────────────────────────${NC}"
+      clear
+      echo -e "${orange}─────────────────────────────────────────${neutral}"
+      echo -e "${green}- BOT SELLVPN TELEGRAM PGETUNNEL${neutral}"
+      echo -e "${orange}─────────────────────────────────────────${neutral}"
 
-    read -p "Masukkan token bot: " token
-    while [ -z "$token" ]; do read -p "Masukkan token bot: " token; done
+      read -p "Masukkan token bot: " token
+      read -p "Masukkan admin ID: " adminid
+      read -p "Masukkan nama store: " namastore
+      read -p "Masukkan DATA QRIS: " dataqris
+      read -p "Masukkan MERCHANT ID: " merchantid
+      read -p "Masukkan API KEY: " apikey
+      read -p "Masukkan Chat ID Group Telegram: " chatid_group
+      read -p "Masukkan Username Saweria: " username_saweria
+      read -p "Masukkan Email Saweria: " saweria_email
 
-    read -p "Masukkan admin ID: " adminid
-    while [ -z "$adminid" ]; do read -p "Masukkan admin ID: " adminid; done
-
-    read -p "Masukkan nama store: " namastore
-    while [ -z "$namastore" ]; do read -p "Masukkan nama store: " namastore; done
-
-    read -p "Masukkan DATA QRIS: " dataqris
-    while [ -z "$dataqris" ]; do read -p "Masukkan DATA QRIS: " dataqris; done
-
-    read -p "Masukkan MERCHANT ID: " merchantid
-    while [ -z "$merchantid" ]; do read -p "Masukkan MERCHANT ID: " merchantid; done
-
-    read -p "Masukkan API KEY: " apikey
-    while [ -z "$apikey" ]; do read -p "Masukkan API KEY: " apikey; done
-
-    read -p "Masukkan Chat ID Group Telegram: " chatid_group
-    while [ -z "$chatid_group" ]; do read -p "Masukkan Chat ID Group Telegram: " chatid_group; done
-
-    read -p "Masukkan Username Saweria: " username_saweria
-    while [ -z "$username_saweria" ]; do read -p "Masukkan Username Saweria: " username_saweria; done
-
-    read -p "Masukkan Email Saweria: " saweria_email
-    while [ -z "$saweria_email" ]; do read -p "Masukkan Email Saweria: " saweria_email; done
-
-    # Simpan konfigurasi ke file .vars.json
-    cat >/root/BotVPN4/.vars.json <<EOF
+      cat >/root/BotVPN4/.vars.json <<EOF
 {
   "BOT_TOKEN": "$token",
   "USER_ID": "$adminid",
@@ -317,24 +213,20 @@ if [[ "$INSTALL_OPTION" == "2" ]]; then
 }
 EOF
 
-    # Deteksi lokasi node secara otomatis
-    NODE_PATH=$(which node)
-    if [ -z "$NODE_PATH" ]; then
-        echo -e "${RED}Node.js tidak ditemukan. Pastikan Node.js sudah terinstall.${NC}"
-        exit 1
-    fi
-    echo -e "${GREEN}Node.js ditemukan di: $NODE_PATH${NC}"
+      NODE_PATH=$(which node)
+      if [ -z "$NODE_PATH" ]; then
+          echo -e "${red}Node.js tidak ditemukan. Pastikan Node.js sudah terinstall.${neutral}"
+          exit 1
+      fi
 
-    # Buat file autorun menggunakan path node absolut
-    cat >/usr/bin/sellvpn <<EOF
+      cat >/usr/bin/sellvpn <<EOF
 #!/bin/bash
 cd /root/BotVPN4 || exit 1
 $NODE_PATH app.js
 EOF
-    chmod +x /usr/bin/sellvpn
+      chmod +x /usr/bin/sellvpn
 
-    # Buat systemd service file dengan ExecStart menggunakan path node absolut
-    cat >/etc/systemd/system/sellvpn.service <<EOF
+      cat >/etc/systemd/system/sellvpn.service <<EOF
 [Unit]
 Description=App Bot sellvpn Service
 After=network.target
@@ -355,16 +247,15 @@ LimitNOFILE=10000
 WantedBy=multi-user.target
 EOF
 
-    systemctl daemon-reload
-    systemctl enable sellvpn
-    systemctl start sellvpn
-    service cron restart
+      systemctl daemon-reload
+      systemctl enable sellvpn
+      systemctl start sellvpn
+      service cron restart
 
-    echo -e "Status Server: $(systemctl is-active sellvpn)"
-    echo -e "${GREEN}Bot berhasil diinstal dan sedang berjalan.${NC}"
+      echo -e "Status Server: $(systemctl is-active sellvpn)"
+      echo -e "${green}Bot berhasil diinstal dan sedang berjalan.${neutral}"
   }
 
-  # Jalankan seluruh proses install Bot Sellvpn
   hapus_bot_lama
   pasang_package
   setup_bot
