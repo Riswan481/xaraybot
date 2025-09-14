@@ -42,20 +42,20 @@ clear
 echo -e "${YELLOW}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo -e "${GREEN}Pilih opsi instalasi:${NC}"
-echo -e "  1) 🔐 Install Script Xray + SSH"
-echo -e "  2) 🤖 Install Bot Sellvpn"
-echo -e "${CYAN}  x) Keluar${NC}"
+echo -e "  1)Install Script Xray + SSH"
+echo -e "  2)Install Bot Sellvpn"
+echo -e "${GREEN}  x) Keluar${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/x): ${NC}")" INSTALL_OPTION
 
 if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
-  echo -e "${RED}❌ Proses dibatalkan oleh user.${NC}"
+  echo -e "${GREEN}❌ Proses dibatalkan oleh user.${NC}"
   exit 0
 fi
 
 if ! [[ "$INSTALL_OPTION" =~ ^[1-2]$ ]]; then
-  echo -e "${RED}❌ Pilihan tidak valid. Instalasi dibatalkan.${NC}"
+  echo -e "${GREEN}❌ Pilihan tidak valid. Instalasi dibatalkan.${NC}"
   exit 1
 fi
 
@@ -71,7 +71,7 @@ echo -e "$LINE"
 if curl -s "$WHITELIST_URL" | grep -q "$MY_IP"; then
   echo -e "✅ ${GREEN}IP kamu terdaftar di whitelist.${NC}"
 else
-  echo -e "❌ ${RED}Maaf, IP kamu ($MY_IP) tidak terdaftar di whitelist.${NC}"
+  echo -e "❌ ${GREEN}Maaf, IP kamu ($MY_IP) tidak terdaftar di whitelist.${NC}"
   echo -e "➡️ ${YELLOW}Hubungi admin 6285888801241 untuk mendaftarkan IP kamu.${NC}"
   echo -e "$LINE"
   exit 1
