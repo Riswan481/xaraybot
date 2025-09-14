@@ -46,13 +46,12 @@ NC='\033[0m' # reset warna
 # --- Menu ---
 # ==========================
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}Pilih opsi instalasi${NC}"
+echo -e "${RED}Pilih opsi instalasi${NC}"
 echo -e "${GREEN}[1] Install Script Xray + SSH${NC}"
 echo -e "${GREEN}[2] Install Bot Sellvpn${NC}"
 echo -e "${GREEN}[x] Keluar${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo ""
-read -p "$(echo -e "${GREEN}Masukkan pilihan kamu (1/2/x): ${NC}")" INSTALL_OPTION
+read -p "$(echo -e "${GREEN}Masukkan pilihan(1/2/x): ${NC}")" INSTALL_OPTION
 
 if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
   echo -e "${GREEN}❌ Proses dibatalkan oleh user.${NC}"
