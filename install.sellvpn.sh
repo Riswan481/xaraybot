@@ -17,7 +17,6 @@ CYAN='\033[1;96m'
 RED='\033[1;91m'
 NC='\033[0m'
 LINE="${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-
 # ==========================
 # --- Fungsi loading ---
 # ==========================
@@ -36,18 +35,24 @@ loading_spinner() {
 }
 
 # ==========================
-# --- Menu Pilihan ---
+# --- Warna ---
 # ==========================
-clear
-echo -e "${YELLOW}"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo -e "${GREEN}Pilih opsi instalasi:${NC}"
-echo -e "  1)Install Script Xray + SSH"
-echo -e "  2)Install Bot Sellvpn"
-echo -e "${GREEN}  x) Keluar${NC}"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+YELLOW='\033[1;33m'
+BLUE='\033[1;34m'
+GREEN='\033[1;32m'
+NC='\033[0m' # reset warna
+
+# ==========================
+# --- Menu ---
+# ==========================
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}Pilih opsi instalasi${NC}"
+echo -e "${GREEN}[1] Install Script Xray + SSH${NC}"
+echo -e "${GREEN}[2] Install Bot Sellvpn${NC}"
+echo -e "${GREEN}[x] Keluar${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-read -p "$(echo -e "${YELLOW}Masukkan pilihan kamu (1/2/x): ${NC}")" INSTALL_OPTION
+read -p "$(echo -e "${GREEN}Masukkan pilihan kamu (1/2/x): ${NC}")" INSTALL_OPTION
 
 if [[ "$INSTALL_OPTION" == "x" || "$INSTALL_OPTION" == "X" ]]; then
   echo -e "${GREEN}❌ Proses dibatalkan oleh user.${NC}"
